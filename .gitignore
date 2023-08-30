@@ -1,0 +1,17 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Solitare_Repo/v17
+/.vs
+/hooks
+/lfs/objects
+/Solitaire/.vs/Solitaire
+/Solitaire/Library
+/Solitaire/Logs
+/Solitaire/obj/Debug
+/Solitaire/Temp
+/Solitaire/UserSettings
+/Solitaire/.vsconfig
+/Solitaire/Assembly-CSharp.csproj
+/Solitaire/Solitaire.sln
