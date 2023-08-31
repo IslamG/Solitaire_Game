@@ -75,5 +75,5 @@ public class DrawDeck : CardGroup
     }
     
 
-    void UpdateSprite() => thisImage.sprite = this.GetSpriteForDrawDeck();
+    public void UpdateSprite() => thisImage.sprite = this.GetSpriteForDrawDeck();
 }

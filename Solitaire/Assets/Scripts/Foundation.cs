@@ -60,7 +60,7 @@ public class Foundation : CardGroup
     {
         foundationMaxed.AddListener(handler);
     }
-
+    public void UpdateSprite() => GetComponent<Image>().sprite = new CardData(CardSuits.Diamonds, CardValues.Ace).GetEmptySprite();
     public override string ToString() => $"Foundation for {Suit}, IsEmpty: {IsEmpty}, Topcard {TopCard?.ToString()?.Split(",")?.FirstOrDefault()}";
 
 

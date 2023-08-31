@@ -96,14 +96,14 @@ public class ScoreManager : MonoBehaviour
         ScoreTitle.text = currentScore.ToString();
     }
 
-    public static void InitializeScore()
+    public void InitializeScore()
     {
        // Debug.Log("Initializing score");
         currentScore = 0;
         BonusScore = 0;
         HasScoring = true;// OptionsManager.HasStatusBar;
         StartingScore = OptionsManager.Scoring is ScoringType.Standard ? 0 : -52;
-       // ScoreTitle.text = currentScore.ToString();
+        ScoreTitle.text = currentScore.ToString();
     }
     public static void CalculateBonus()
     {

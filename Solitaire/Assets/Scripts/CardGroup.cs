@@ -17,7 +17,12 @@ public class CardGroup : MonoBehaviour
         EventManager.CardLeftInvoker(this);
         EventManager.CardUpInvokers(this);
     }
-
+    public void ResetGroup()
+    {
+        CardList.Clear();
+        TopCard= null;
+        IsEmpty= true;
+    }
     public OnCardExposed cardTurned = new();
     public OnCardLeftTablue<CardSpace, CardGroup> recievedCard = new();
     public OnCardListLeftTablue<List<CardSpace>, CardGroup> recievedList = new();

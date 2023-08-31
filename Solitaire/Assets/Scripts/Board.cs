@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using static GameState;
 
 public class Board : MonoBehaviour
@@ -14,6 +13,13 @@ public class Board : MonoBehaviour
     public static DrawDeck DrawDeck;
     public static DiscardPile DiscardPile;
     public static ScoreManager ScoreManager;
+    
+    [SerializeField]
+    Timer Timer;
+    [SerializeField]
+    GameObject CardOptionsWindow;
+    [SerializeField]
+    GameObject GameOptionsWindow;
 
     public List<Tablue> Tablues = new();
     public List<Foundation> Foundations = new();
@@ -55,7 +61,10 @@ public class Board : MonoBehaviour
     {
         maxedFoundations++;
         if (maxedFoundations == FOUNDATION_COUNT)
+        {
             Debug.Log("Game won, Score " + ScoreManager.GetFinalScore());
+            Timer.Stop();
+        }
     }
     private void InitializeTablues()
     {
@@ -83,6 +92,35 @@ public class Board : MonoBehaviour
         //foreach (var f in Foundations) Debug.Log(f);
     }
 
+    public void NewGame()
+    {
+        CardOptionsWindow.SetActive(false);
+        GameOptionsWindow.SetActive(false);
+        GenerateDeck();
+        DiscardPile.ResetGroup();
+        foreach (Transform child in DiscardPile.transform) Destroy(child.gameObject);
+        DiscardPile.UpdateSprite();
+        DrawDeck.ResetGroup();
+        DrawDeck.UpdateSprite();
+
+        foreach (var f in Foundations) 
+        {
+            f.ResetGroup();
+            f.UpdateSprite();
+            foreach (Transform child in f.transform) Destroy(child.gameObject);
+        }
+        foreach (var t in Tablues)
+        {
+            t.ResetGroup();
+            foreach (Transform child in t.transform) Destroy(child.gameObject);
+        }
+        InitializeTablues();
+        InitializeFoundations();
+        DrawDeck.Initialize();
+
+        Timer.InitializeTimer();
+        ScoreManager.InitializeScore();
+    }
     public bool ValidCardMove(CardSpace card, CardGroup dst) => dst.tag switch
     {
         "CardSpace" or "Column" => ValidateSlot(card, dst), 
