@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -65,10 +62,8 @@ public class ScoreManager : MonoBehaviour
     {
         var isFoundation = dst.GetComponentInParent<Foundation>() != null;
         var isTablue = dst.GetComponentInParent<Tablue>() != null;
-        //Debug.Log("is foundation " + isFoundation + " id tab " + isTablue);
         if (!isFoundation && !isTablue) return;
         currentScore += isFoundation ? TAB_TO_FOUNDATION : DISCARD_TO_TAB;
-        //Debug.Log("current score " + currentScore);
         ScoreTitle.text = currentScore.ToString();
     }
 
@@ -80,7 +75,6 @@ public class ScoreManager : MonoBehaviour
 
     private void HandleCardExposed()
     {
-        //Debug.Log("Exposed");
         currentScore += EXPOSE_CARD_TAB;
         ScoreTitle.text = currentScore.ToString();
     }
@@ -89,16 +83,13 @@ public class ScoreManager : MonoBehaviour
     {
         var isFoundation = dst.GetComponentInParent<Foundation>() != null;
         var isTablue = dst.GetComponentInParent<Tablue>() != null;
-        //Debug.Log("is foundation " + isFoundation+ " id tab " + isTablue);
         if (!isFoundation && !isTablue) return;
         currentScore += isFoundation ? DISCARD_TO_FOUNDATION : 0;
-        //Debug.Log("current score " + currentScore);
         ScoreTitle.text = currentScore.ToString();
     }
 
     public void InitializeScore()
     {
-       // Debug.Log("Initializing score");
         currentScore = 0;
         BonusScore = 0;
         HasScoring = true;// OptionsManager.HasStatusBar;

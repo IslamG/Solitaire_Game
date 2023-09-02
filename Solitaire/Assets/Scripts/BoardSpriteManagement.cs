@@ -22,6 +22,8 @@ public static class BoardSpriteManagement
     //64 Empty
     //65-73 More
     //74-77 Blank
+
+    public static int CurrentCardSprite => BackIndex;
     public static Sprite GetSpriteForCard(this CardData card) => card.IsFaceUp ? card.GetFaceUpSprite() : card.GetFaceDownSprite();
     public static Sprite GetFaceDownSprite(this CardData card) => LoadByName($"{SpriteSheetName}_{BackIndex}");
     public static Sprite GetFaceUpSprite(this CardData card)
@@ -33,13 +35,11 @@ public static class BoardSpriteManagement
             CardSuits.Clubs => 26,
             CardSuits.Diamonds => 39
         };
-        //Debug.Log("Card sprite: " + $"{SpriteSheetName}_{(range + (int)card.CardValue - 1)}");
         return LoadByName($"{SpriteSheetName}_{(range + (int)card.CardValue - 1)}");
     }
     public static Sprite GetEmptySprite(this CardData card) => LoadByName($"{SpriteSheetName}_{EmptyIndex}");
     public static Sprite GetSpriteForDiscard(this CardGroup pile)
     {
-        //Debug.Log("Get sprite discard "+ pile);
         if (pile.IsEmpty)
             return LoadByName($"{SpriteSheetName}_{EmptyPositiveIndex}");//Always positive?
 
@@ -65,19 +65,6 @@ public static class BoardSpriteManagement
         return null;
     }
     static Sprite LoadByIndex(int index) => All[index];
-    //public static void DisableImage(this Image img)
-    //{
-    //    img.sprite = null;
-    //    img.color = Color.clear;
-    //    img.raycastTarget = false;//Reset on reactivate
-    //}
-
-    //public static void EnableImage(this Image img, CardData card)
-    //{
-    //    //img.sprite = card.Get;
-    //    img.color = Color.white;
-    //    img.raycastTarget = true;//Reset on reactivate
-    //}
 
 }
 

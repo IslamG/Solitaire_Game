@@ -26,6 +26,7 @@ public class OnCardLeftTablue<CardSpace, Tablue> : UnityEvent<CardSpace, CardGro
 public class OnCardListLeftTablue<List, Tablue> : UnityEvent<List, CardGroup> { }//Tab -[] -> Tab, group = src
 
 public class OnCardLeftDiscard<CardSpace, DiscardPile> : UnityEvent<CardSpace, CardGroup> { } //waste -> Found || Tab, group == dst
-public class OnCardExposed: UnityEvent { }
+public class OnCardExposed : UnityEvent { }
 public class OnDiscardReset : UnityEvent { }
-public class OnFoundationMaxed: UnityEvent { }
+public class OnFoundationMaxed : UnityEvent { }
+public class OnCardBackChanged : UnityEvent { }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,12 +28,11 @@ public class DrawDeck : CardGroup
         if (Board is null) return;
 
         thisImage = GetComponent<Image>();
-        //InitializeDrawDeck();
     }
     void Start()
     {
         DiscardPile = Board.DiscardPile;
-        //Debug.Log("Discard pile ref " + DiscardPile);
+        EventManager.CardBackChanged(UpdateSprite);
     }
     public void Initialize()
     {
@@ -43,15 +40,12 @@ public class DrawDeck : CardGroup
         CardList.AddRange(Deck);
         TopCard = CardList?.Last<CardData>();
         IsEmpty = false;
-        //Debug.Log($"Draw Deck {this}");
         UpdateSprite();
     }
     public void DiscardCard()
     {
-        //Debug.Log("Discarding");
         if (IsEmpty) DiscardPile.ResetDiscardPile();
 
-        //if (!DiscardPile.IsEmpty) DiscardPile.TopCard.Hide();
         DiscardPile.CardList.Add(TopCard);
         DiscardPile.TopCard = TopCard;
         DiscardPile.TopCard.IsFaceUp = true;
@@ -67,9 +61,7 @@ public class DrawDeck : CardGroup
         else
         {
             TopCard =  CardList.Last();
-            //TopCard.Expose();
         }
-        //DiscardPile.UpdateSprite();
         DiscardPile.SpawnCard();
         UpdateSprite();
     }

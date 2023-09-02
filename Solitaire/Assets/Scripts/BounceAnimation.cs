@@ -41,7 +41,7 @@ public class BounceAnimation : MonoBehaviour
         bounceDirection = Random.Range(0, 2) * 2 - 1; //-1 || 1 for R/L X
         initialArchHeight = Random.Range(5, 10); //??
         yOffset = Random.Range(-9, 0); //Initiated ascending
-        xOffset= Random.Range(-9, -3);//??
+        xOffset= Random.Range(-11, -5);//??
 
         topBorder = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).y; //top right
         rightBorder = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x; //top right
@@ -66,12 +66,12 @@ public class BounceAnimation : MonoBehaviour
         //Debug.Log("W2VP " + pos);
         //pos = Camera.main.WorldToScreenPoint(clone?.localPosition ?? new Vector3());
         //Debug.Log("W2SP " + pos);
-        //pos = Camera.main.ScreenToViewportPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("S2VP " + pos);
+        var pos = Camera.main.ScreenToViewportPoint(clone?.localPosition ?? new Vector3());
+        Debug.Log("S2VP " + pos);
         //pos = Camera.main.ScreenToWorldPoint(clone?.localPosition ?? new Vector3());
         //Debug.Log("S2WP " + pos);
-        var pos = Camera.main.ViewportToWorldPoint(clone?.localPosition ?? new Vector3());
-        Debug.Log("V2WP " + pos);
+        //pos = Camera.main.ViewportToWorldPoint(clone?.localPosition ?? new Vector3());
+        //Debug.Log("V2WP " + pos);
         //pos = Camera.main.ViewportToScreenPoint(clone?.localPosition ?? new Vector3());
         //Debug.Log("V2SP " + pos);
         //Debug.Log($"pos {pos} Screen h {Screen.height}");
@@ -88,19 +88,23 @@ public class BounceAnimation : MonoBehaviour
                 break;
             case ArchStates.Desc:
                 yOffset -= 1;
-                if (pos.y >= lowerBound)
+                //KeepFullyOnScreen(clone.gameObject, new Vector3(position.x + xOffsetSum, position.y + yOffsetSum, position.z));
+                if (pos.y <= -0.7)
+                {
                     archState = ArchStates.InitBounce;
+                    bounceArchHeight = 0;
+                }
                 break;
             case ArchStates.InitBounce:
                 Debug.Log("bouncing " + yOffset + " y pos " + pos.y);
                 yOffset = 0;
                 xOffset += 2;
-                bounceArchHeight = Random.Range(3, 8); //bound or sum??
+                bounceArchHeight = Random.Range(3, 7); //bound or sum??
                 archState = ArchStates.BounceBottom;
                 break;
             case ArchStates.BounceBottom:
                 yOffset += 2;
-                if (bounceArchHeight >= 10)
+                if (bounceArchHeight >= 8)
                     archState = ArchStates.Desc;
                 //yOffset *= -1;
                 break;
@@ -126,6 +130,22 @@ public class BounceAnimation : MonoBehaviour
         cloneCount++;
 
     }
+
+    Vector3 KeepFullyOnScreen(GameObject panel, Vector3 newPos)
+    {
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        RectTransform CanvasRect = GameObject.Find("MainCanvas").GetComponent<RectTransform>();
+
+        float minX = (CanvasRect.sizeDelta.x - rect.sizeDelta.x) * -0.5f;
+        float maxX = (CanvasRect.sizeDelta.x - rect.sizeDelta.x) * 0.5f;
+        float minY = (CanvasRect.sizeDelta.y - rect.sizeDelta.y) * -0.5f;
+        float maxY = (CanvasRect.sizeDelta.y - rect.sizeDelta.y) * 0.5f;
+
+        newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
+        newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
+
+        return newPos;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -139,6 +159,6 @@ public class BounceAnimation : MonoBehaviour
         //    StartCoroutine("Clone");
         //    //Debug.Break();
         //}
-        if (cloneCount >= 40) CancelInvoke("Clone");
+        if (cloneCount >= 55) CancelInvoke("Clone");
     }
 }

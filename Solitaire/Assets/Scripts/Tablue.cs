@@ -16,11 +16,10 @@ public class Tablue : CardGroup
     public List<CardSpace> ColumnSpaces = new();
     public List<CardSpace> MoveableCards;
     public List<CardSpace> GetMoveableCards() => ColumnSpaces.Where(c => c.CardData?.IsFaceUp ?? false)?.ToList();
-
+    public List<CardSpace> GetHiddenCards() => ColumnSpaces.Where(c => !c.CardData?.IsFaceUp ?? false).ToList();
     public void Awake()
     {
         ColumnSpaces = GetComponentsInChildren<CardSpace>().ToList();
-        //MoveableCards = ColumnSpaces.Where(c => c.CardData.IsFaceUp)?.ToList();
     }
      void Start()
     {
@@ -31,20 +30,19 @@ public class Tablue : CardGroup
 
         EventManager.CardLeftListener(CardLeft);
         EventManager.CardLeftListListener(CardListLeft);
+
+        EventManager.CardBackChanged(UpdateHiddenSprites);
     }
 
     #region Event Methods
     private void CardLeft(CardSpace card, CardGroup src)
     {
-        //Debug.Log("Src " + src + " this " + this);
         if (src != this) return; 
-        //if (!MoveableCards.Contains(card)) return;
         if (TopCard != card.CardData) return; //Should only remove top single card
 
         CardList.Remove(card.CardData);
 
         ColumnSpaces.Remove(card);
-        //Debug.Log("Destroying " + card);
         Destroy(card.gameObject);
 
         if (CardList.Count == 0)
@@ -64,7 +62,6 @@ public class Tablue : CardGroup
 
             var img = ColumnSpaces[0].GetComponent<Image>();
             img.sprite = ColumnSpaces[0].CardData.GetEmptySprite();
-            //img.EnableImage(ColumnSpaces[0].CardData);
             return;
         }
 
@@ -72,26 +69,21 @@ public class Tablue : CardGroup
         TopCard.IsFaceUp = true;
         ColumnSpaces.Last().CardData.IsFaceUp = true;
         cardTurned.Invoke();
-        //Debug.Log("Card left Card last " + CardList.Last() + " top card " + TopCard + " card by index " + CardList[CardList.Count - 1]);
 
 
         var nextCard = ColumnSpaces.Last();
-        //Debug.Log("Next card " + nextCard);
         ColumnSpaces.Last().CardData.IsFaceUp = true;
         ColumnSpaces.Last().SetCardSprite();
     }
     private void CardListLeft(List<CardSpace> cards, CardGroup src)
     {
         if (src != this) return;
-        //if (!MoveableCards.Intersect(cards).Any()) return;
-        //Debug.Log("count of cards left " + cards.Count);
         
         foreach(CardSpace card in cards)
         {
             CardList.Remove(CardList.FirstOrDefault(c => c == card.CardData));
             
             ColumnSpaces.Remove(card);
-           // Debug.Log("Destroying " + card);
             Destroy(card.gameObject);
             
         }
@@ -113,7 +105,6 @@ public class Tablue : CardGroup
 
             var img = ColumnSpaces[0].GetComponent<Image>();
             img.sprite = ColumnSpaces[0].CardData.GetEmptySprite();
-            //img.EnableImage(ColumnSpaces[0].CardData);
             return;
         }
 
@@ -121,7 +112,6 @@ public class Tablue : CardGroup
         TopCard.IsFaceUp = true;
         ColumnSpaces.Last().CardData.IsFaceUp = true;
         cardTurned.Invoke();
-        //Debug.Log("List left Card last " + CardList.Last() + " top card " + TopCard + " card by index " + CardList[CardList.Count - 1]);
 
 
         var nextCard = ColumnSpaces.Last();
@@ -131,14 +121,11 @@ public class Tablue : CardGroup
     private void CardAdded(CardSpace card, CardGroup dst)
     {
         if (dst != this) return;
-        //if (dst.CompareTag("Column") && ((Tablue)dst).Index != Index) return; //destination is tab and is me
-        //if (ColumnSpaces.Contains(card)) return; //Already in pile
 
         var board = Camera.main.GetComponent<Board>();
         if (board is null) return;
         if (!board.ValidCardMove(card, this)) return;
 
-        //Debug.Log(this.name + " Added " + card);
 
         if (IsEmpty)
         {
@@ -164,7 +151,6 @@ public class Tablue : CardGroup
         ColumnSpaces.Add(spaceData);
 
         TopCard = CardList.Last();
-        //Debug.Log("Card Added Card last " + CardList.Last() + " top card " + TopCard + " card by index " + CardList[CardList.Count - 1]);
         TopCard.IsFaceUp = true;
 
         recievedCard.Invoke(card, card.GetComponentInParent<Tablue>());
@@ -172,15 +158,11 @@ public class Tablue : CardGroup
     private void CardListAdded(List<CardSpace> cards, CardGroup dst)
     {
         if (dst != this) return;
-        //if (dst.CompareTag("Column") && ((Tablue)dst).Index != Index) return;//destination is tab and is me
-       // if (MoveableCards.Any(c=> cards.Contains(c))) return; //Cards that are moving
 
         var board = Camera.main.GetComponent<Board>();
         if (board is null) return;
         if (!board.ValidCardMove(cards[0], this)) return;
 
-        //Debug.Log(this.name + " Added " + cards[0]);
-        //Debug.Log("count of cards added " + cards.Count);
 
         if (IsEmpty)
         {
@@ -193,7 +175,6 @@ public class Tablue : CardGroup
 
         foreach(CardSpace card in cards)
         {
-            //Debug.Log("card adding " + card.CardData);
             CardList.Add(card.CardData);
 
             var emptyCard = Resources.Load("Empty");
@@ -207,21 +188,16 @@ public class Tablue : CardGroup
             card.CardData.IsFaceUp = true;
             spaceData.SetCardSprite();
             ColumnSpaces.Add(spaceData);
-            //Debug.Log("Count "+ ColumnSpaces.Count + " count "+ CardList.Count);
         }
 
         TopCard = CardList.Last();
         TopCard.IsFaceUp = true;
-        //Debug.Log("Add List Card last " + CardList.Last() + " top card " + TopCard + " card by index " + CardList[CardList.Count - 1]);
 
 
         recievedList.Invoke(cards, cards[0].GetComponentInParent<Tablue>());
     }
+    private void  UpdateHiddenSprites() => GetHiddenCards().ForEach(x=> x.SetCardSprite());    
     
-    //public void AddListener(UnityAction<CardSpace, CardGroup> handler)
-    //{
-    //    AddListener(handler);
-    //}
     #endregion Event methods
 
     #region Initialization
@@ -245,8 +221,6 @@ public class Tablue : CardGroup
     {
         AddHiddenCards();
         AddTopCard();
-        //ColumnSpaces.Reverse();
-        //HideRemainingSpaces();
     }
 
     private void AddHiddenCards()
@@ -295,7 +269,6 @@ public class Tablue : CardGroup
         foreach (var space in emptyChildren)
         {
             var img = space.GetComponent<Image>();
-            //img.DisableImage();
         }
     }
     #endregion Initialization

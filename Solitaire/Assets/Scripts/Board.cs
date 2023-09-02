@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static GameState;
 
@@ -74,10 +71,6 @@ public class Board : MonoBehaviour
             var t = tabColumns[i].GetComponent<Tablue>();
             t.Initialize();
             Tablues.Add(t);
-
-            //Debug.Log(t.ToString());
-            //Debug.Log($"Cards remaining in deck: {Deck.Count}");
-            //Debug.Log($"\n{i + 1} END --------------\n");
         }
     }
     private void InitializeFoundations()
@@ -88,8 +81,6 @@ public class Board : MonoBehaviour
             var f = foundations[i].GetComponent<Foundation>();
             Foundations.Add(f);
         }
-
-        //foreach (var f in Foundations) Debug.Log(f);
     }
 
     public void NewGame()
@@ -130,7 +121,6 @@ public class Board : MonoBehaviour
     };
     public bool ValidateFoundation(CardSpace card, CardGroup dst)
     {
-        //Debug.Log("Validating foundation " + dst);
         var src = card.GetComponentInParent<CardGroup>();
         if (src == dst) return false;
         if (card.CardData != src.TopCard) return false;
@@ -148,7 +138,6 @@ public class Board : MonoBehaviour
     }
     public bool ValidateSlot(CardSpace card, CardGroup dst)
     {
-        //Debug.Log("slot call for " + dst);
         if (card.GetComponentInParent<CardGroup>() == dst) return false;
 
         if (dst.IsEmpty)
@@ -163,21 +152,6 @@ public class Board : MonoBehaviour
         }
         return true;
     }
-
-    //public void SimulateGame()
-    //{
-        //Debug.Log("Starting game");
-        //while (Foundations[0].IsEmpty && !DrawDeck.IsEmpty)
-        //{
-        //    Debug.Log("Drawing Card");
-        //    if (!MoveToFoundation(DrawDeck, Foundations[0]))
-        //        DiscardCard();
-
-        //    Debug.Log(Foundations[0]);
-        //    Debug.Log("Draw Deck: " + DrawDeck);
-        //    Debug.Log("Discard Pile: " + DiscardPile);
-        //}
-    //}
 }
 
 

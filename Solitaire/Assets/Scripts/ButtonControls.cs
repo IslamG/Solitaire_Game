@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ButtonControls : MonoBehaviour
@@ -14,6 +15,10 @@ public class ButtonControls : MonoBehaviour
     int fullScreenWidth;
 
     bool isMaximized = false;
+    public OnCardBackChanged backChanged = new();
+
+    int lastSavedBack;
+    int selectedBack = 52;
 
     [DllImport("user32.dll")]
     private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
@@ -38,6 +43,10 @@ public class ButtonControls : MonoBehaviour
         fullScreenWidth = Screen.currentResolution.width;
         GameDropDown.captionText.text = "Game";
         HelpDropDown.captionText.text = "Help";
+
+        lastSavedBack = BoardSpriteManagement.CurrentCardSprite;
+
+        EventManager.CardBackChangedInvoker(this);
     }
     public void CloseButton() 
     {
@@ -133,5 +142,30 @@ public class ButtonControls : MonoBehaviour
             case 0: HelpDropDown.captionText.text = "Help"; return;
             case 1: HelpDropDown.captionText.text = "Help"; break;
         }
+    }
+
+    public void AcceptCardBack()
+    {
+        lastSavedBack = BoardSpriteManagement.CurrentCardSprite;
+        lastSavedBack.ChangeCardBack();
+        HideCardOptionsWindow();
+    }
+    public void CancelCardBack()
+    {
+        lastSavedBack.ChangeCardBack();
+        HideCardOptionsWindow();
+        backChanged.Invoke();
+    }
+    public void BackSelected(int val)
+    {
+        //originalBack = 
+        selectedBack = val;
+
+        val.ChangeCardBack();
+        backChanged.Invoke();
+    }
+    public void AddListener(UnityAction handler)
+    {
+        backChanged.AddListener(handler);
     }
 }

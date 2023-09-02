@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GameState;
 
@@ -60,7 +56,7 @@ public class CardSpace : MonoBehaviour
     {
         var theSprite = CardData.GetSpriteForCard();
 
-        thisImage.sprite = theSprite;//CardData.GetSpriteForCard();
+        thisImage.sprite = theSprite;
     }
     public override string ToString()
     {

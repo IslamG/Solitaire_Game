@@ -93,8 +93,6 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             {
                 yOffset *= (i + 1);
                 lowerSiblings[i].transform.localPosition = new Vector3(startPosition.x, startPosition.y - yOffset, lowerSiblings[i].transform.position.z);
-
-                //lowerSiblings[i].GetComponent<Drag>().OnDrag(eventData);
             }
         }
         
@@ -103,25 +101,21 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     public void Dropped(CardGroup src, CardGroup dst)
     {
         //I am the dropped, src is my parent group, destination is where i was dropped
-       // Debug.Log("src "+ src +" dst "+ dst +" dst tag "+ dst.tag);
         var tag = dst.tag;
         switch (tag)
         {
             case "Column":
                 {
-                    Debug.Log("Droppped on slot");
                     HandleMoveToSpace(src, dst);
                     break;
                 }
             case "Foundation":
                 {
-                    Debug.Log("Droppped on Foundation");
                     HandleMoveToFoundation(src, dst);
                     break;
                 }
             case "DiscardPile"://non case
                 {
-                    Debug.Log("Droppped on Pile");
                     return;
                     break;
                 }
@@ -134,16 +128,13 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             moveable =GetComponentInParent<Tablue>().GetMoveableCards();
         lowerSiblings = moveable.Where(c => moveable.IndexOf(thisCard) < moveable.IndexOf(c)).ToList();
         lowerSiblings.Insert(0, thisCard);
-       // Debug.Log(gameObject.name + " first of dropped " + lowerSiblings?.First() + " last of dropped" + lowerSiblings?.Last());
         if (lowerSiblings.Count < 2)
         {
-            //Debug.Log("Invoking single from drag ");
             movedToTab.Invoke(thisCard, dst);
             Destroy(gameObject);
         }
         else
         {
-            //Debug.Log("Invoking list from drag ");
             listToTab.Invoke(lowerSiblings, dst);
             foreach(CardSpace card in lowerSiblings)
             {
@@ -151,15 +142,10 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
                 Destroy(gameObject);
             }
         }
-
-        // Destroy(gameObject); ??
     }
 
     private void HandleMoveToFoundation(CardGroup src, CardGroup dst)//Source is currently tab only, but in future might be from discard
     {
-        //var moveable = GetComponentInParent<Tablue>().GetMoveableCards();
-        //lowerSiblings = moveable.Where(c => moveable.IndexOf(thisCard) < moveable.IndexOf(c)).ToList();
-        //lowerSiblings.Insert(0, thisCard);
         if (thisCard.CardData != src.TopCard) return;
         movedToFoundation.Invoke(thisCard, dst);
         Destroy(gameObject);
@@ -178,9 +164,6 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     IEnumerator UpdateLayoutGroup()
     {
         var layoutGroupComponent = gameObject.GetComponent<LayoutGroup>();
-        //Debug.Log("tran " + layoutGroupComponent.GetComponent<RectTransform>());
-        //LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroupComponent.GetComponent<RectTransform>());
-        //return null;
         layoutGroupComponent.enabled = false;
         yield return new WaitForEndOfFrame();
         layoutGroupComponent.enabled = true;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,11 +9,13 @@ public static class EventManager
     static List<CardGroup> cardUpInvokers = new List<CardGroup>();//For scoring  (?)
     static DiscardPile discardInvoker = new DiscardPile(); 
     static List<Foundation> maxInvokers= new List<Foundation>();
+    static ButtonControls cardChangeInvoker = new ButtonControls();
 
     static List<UnityAction<CardSpace, CardGroup>> discardMovedListeners = new List<UnityAction<CardSpace, CardGroup>>();
     static List<UnityAction> cardExposedListeners = new List<UnityAction>();
     static List<UnityAction> discardResetListners = new List<UnityAction>();
     static List<UnityAction> maxedListeners = new List<UnityAction>();
+    static List<UnityAction> cardChangedListeners = new List<UnityAction>();
 
     static List<UnityAction<CardSpace, CardGroup>> droppedOnListeners = new List<UnityAction<CardSpace, CardGroup>>(); 
     static List<UnityAction<List<CardSpace>, CardGroup>> listDroppedOnListeners = new List<UnityAction<List<CardSpace>, CardGroup>>();
@@ -101,6 +102,15 @@ public static class EventManager
             reciever.AddListener(listener);
         }
     }
+    public static void CardBackChangedInvoker(ButtonControls btnCtrl)
+    {
+        cardChangeInvoker = btnCtrl;
+
+        foreach (var listener in cardChangedListeners)
+        {
+            btnCtrl.AddListener(listener);
+        }
+    }
     /// <summary>
     /// A single card is dropping, am I, as a group relevant?
     /// </summary>
@@ -167,7 +177,7 @@ public static class EventManager
     public static void DiscardReset(UnityAction handler)
     {
         discardResetListners.Add(handler);
-        discardInvoker.AddListener(handler) ;
+        discardInvoker.AddListener(handler);
     }
     public static void FoundationMaxed(UnityAction handler)
     {
@@ -184,6 +194,11 @@ public static class EventManager
         {
             src.AddListener(handler);
         }
+    }
+    public static void CardBackChanged(UnityAction handler)
+    {
+        cardChangedListeners.Add(handler);
+        cardChangeInvoker.AddListener(handler);
     }
 
 }

@@ -1,10 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEngine;
 using Random = System.Random;
 
 public static class GameState 
@@ -18,10 +13,6 @@ public static class GameState
     public static List<CardData> Deck { get; private set;}
 
     private static Random RandomVal = new Random();
-    //private static readonly CardSuits[] CardSuitArr = { CardSuits.Diamonds, CardSuits.Hearts, CardSuits.Clubs, CardSuits.Spades };
-    //private static readonly CardValues[] CardValueArr = { CardValues.Ace, CardValues.Two, CardValues.Three, CardValues.Four,
-    //    CardValues.Five, CardValues.Six, CardValues.Seven, CardValues.Eight, CardValues.Nine, CardValues.Ten,
-    //    CardValues.Jack, CardValues.Queen, CardValues.King };
 
     public enum CardSuits
     {
@@ -31,11 +22,6 @@ public static class GameState
     {
         Red, Black
     }
-
-    //public enum FaceCards
-    //{
-    //    King = 13, Queen = 12, Jack = 11, Ace = 1,
-    //}
     public enum CardValues //NumberCards
     {
         Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
@@ -64,11 +50,6 @@ public static class GameState
         }
 
         Deck = deck.Shuffle<CardData>();
-
-        //foreach (var card in deck)
-        //{
-        //    Debug.Log(card.ToString());
-        //}
     }
     private static T PickRandom<T>(this List<T> source)
     {
