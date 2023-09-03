@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.U2D;
 using UnityEngine.UI;
 //using Random = System.Random;
 
@@ -9,6 +8,8 @@ public class BounceAnimation : MonoBehaviour
 {
     [SerializeField]
     Transform cardPrefab;
+    [SerializeField]
+    int cloneLimit;
 
     private int yOffset = -9;
     private int xOffset = -9;
@@ -66,10 +67,10 @@ public class BounceAnimation : MonoBehaviour
         //Debug.Log("W2VP " + pos);
         //pos = Camera.main.WorldToScreenPoint(clone?.localPosition ?? new Vector3());
         //Debug.Log("W2SP " + pos);
-        var pos = Camera.main.ScreenToViewportPoint(clone?.localPosition ?? new Vector3());
-        Debug.Log("S2VP " + pos);
-        //pos = Camera.main.ScreenToWorldPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("S2WP " + pos);
+        //pos = Camera.main.ScreenToViewportPoint(clone?.localPosition ?? new Vector3());
+        //Debug.Log("S2VP " + pos);
+        var pos = Camera.main.ScreenToWorldPoint(clone?.position ?? new Vector3(1,1,1));
+        Debug.Log("S2WP " + pos);
         //pos = Camera.main.ViewportToWorldPoint(clone?.localPosition ?? new Vector3());
         //Debug.Log("V2WP " + pos);
         //pos = Camera.main.ViewportToScreenPoint(clone?.localPosition ?? new Vector3());
@@ -89,7 +90,7 @@ public class BounceAnimation : MonoBehaviour
             case ArchStates.Desc:
                 yOffset -= 1;
                 //KeepFullyOnScreen(clone.gameObject, new Vector3(position.x + xOffsetSum, position.y + yOffsetSum, position.z));
-                if (pos.y <= -0.7)
+                if (pos.y <= bottomBorder+1.71)
                 {
                     archState = ArchStates.InitBounce;
                     bounceArchHeight = 0;
@@ -159,6 +160,6 @@ public class BounceAnimation : MonoBehaviour
         //    StartCoroutine("Clone");
         //    //Debug.Break();
         //}
-        if (cloneCount >= 55) CancelInvoke("Clone");
+        if (cloneCount >= cloneLimit) CancelInvoke("Clone");
     }
 }

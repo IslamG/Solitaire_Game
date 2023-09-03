@@ -46,24 +46,51 @@ public class DrawDeck : CardGroup
     {
         if (IsEmpty) DiscardPile.ResetDiscardPile();
 
-        DiscardPile.CardList.Add(TopCard);
-        DiscardPile.TopCard = TopCard;
-        DiscardPile.TopCard.IsFaceUp = true;
-        DiscardPile.IsEmpty = false;
-
-        CardList.Remove(TopCard);
-
-        if (TotalCount == 0)
+        var draw = OptionsManager.DrawCount is DrawType.Single ? 1 : 3;
+        int count = 0;
+        Debug.Log("Discarding card " + draw);
+        if (OptionsManager.DrawCount is not DrawType.Single)
         {
-            IsEmpty = true;
-            CardList.Clear();
+            var deckPosition = DiscardPile.gameObject.transform.position;
+            Debug.Log("get children " + DiscardPile.transform);
+            foreach (Transform child in DiscardPile.transform)
+            {
+                Debug.Log($"the child {child} deck position {deckPosition}");
+                child.transform.position = new Vector3(deckPosition.x, child.position.y, child.position.z);
+                child.GetComponent<Drag>().enabled = true;
+                Debug.Log("child position after " + child.position);
+            }
         }
-        else
+        while (count < draw && !IsEmpty)
         {
-            TopCard =  CardList.Last();
+            
+            DiscardPile.CardList.Add(TopCard);
+            DiscardPile.TopCard = TopCard;
+            DiscardPile.TopCard.IsFaceUp = true;
+            DiscardPile.IsEmpty = false;
+
+            CardList.Remove(TopCard);
+
+            if (TotalCount == 0)
+            {
+                IsEmpty = true;
+                CardList.Clear();
+            }
+            else
+            {
+                TopCard = CardList.Last();
+            }
+            DiscardPile.SpawnCard(count);
+            UpdateSprite();
+            //Debug.Log ("here " + draw);
+            count++;
         }
-        DiscardPile.SpawnCard();
-        UpdateSprite();
+        if (OptionsManager.DrawCount is not DrawType.Single)
+        {
+
+            var topCardSpace = GameObject.Find($"{DiscardPile.TopCard.CardValue} of {DiscardPile.TopCard.CardSuit}");
+            topCardSpace.GetComponent<Drag>().enabled = true;
+        }
     }
     
 

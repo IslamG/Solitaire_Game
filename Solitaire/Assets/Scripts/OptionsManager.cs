@@ -15,6 +15,7 @@ public static class OptionsManager
     public static void SetBackIndext(this int index) => CardBackIndex = index;
     public static void SetCardBack(this int index) => index.ChangeCardBack();
     public static int NumberOfAllowedResets() => Scoring is ScoringType.Vegas ? 3 : 3;
+    public static int DrawCountAsValue(this DrawType drawType) => drawType is DrawType.Single ? 1 : 3;
 }
 public enum DrawType
 {

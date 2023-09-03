@@ -53,6 +53,9 @@ public class Board : MonoBehaviour
 
         EventManager.FoundationMaxed(FoundationMaxed);
 
+        if (OptionsManager.DrawCount is not DrawType.Single)
+            Destroy(GameObject.Find("Empty1"));
+
     }
     private void FoundationMaxed()
     {

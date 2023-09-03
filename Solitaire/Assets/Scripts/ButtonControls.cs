@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ButtonControls : MonoBehaviour
@@ -66,6 +67,9 @@ public class ButtonControls : MonoBehaviour
         lastHasScoring = OptionsManager.Scoring != ScoringType.None;
 
         EventManager.CardBackChangedInvoker(this);
+
+        //var c = GameDropDown.GetComponentsInChildren<Toggle>(true);
+        //Debug.Log("toggle 0 name " + c[0].name);
     }
 
     #region WindowHeader
@@ -149,18 +153,14 @@ public class ButtonControls : MonoBehaviour
     }
     public void GameDropDownSelect()
     {
-
-        Debug.Log("before "+GameDropDown.value);  
-
         switch (GameDropDown.value)
         {
-            case 0: GameDropDown.SetValueWithoutNotify(5); Camera.main.GetComponent<Board>().NewGame();  break;
-            case 1: GameDropDown.SetValueWithoutNotify(5); ShowCardOptionsWindow(); break;
-            case 2: GameDropDown.SetValueWithoutNotify(5); ShowGameOptionsWindow(); break;
-            case 3: GameDropDown.SetValueWithoutNotify(5); CloseButton();  break;
+            case 1: GameDropDown.SetValueWithoutNotify(0); Camera.main.GetComponent<Board>().NewGame();  break;
+            case 2: GameDropDown.SetValueWithoutNotify(0); ShowCardOptionsWindow(); break;
+            case 3: GameDropDown.SetValueWithoutNotify(0); ShowGameOptionsWindow(); break;
+            case 4: GameDropDown.SetValueWithoutNotify(0); CloseButton();  break;
         }
 
-        Debug.Log("after "+GameDropDown.value);
         GameDropDown.captionText.text = "Game";
     }
     public void HelpDropDownSelect()
@@ -170,6 +170,10 @@ public class ButtonControls : MonoBehaviour
             case 0: HelpDropDown.captionText.text = "Help"; return;
             case 1: HelpDropDown.captionText.text = "Help"; break;
         }
+    }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        
     }
     #endregion
 

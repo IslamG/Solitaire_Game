@@ -9,6 +9,7 @@ public class DiscardPile : CardGroup
     private DrawDeck DrawDeck;
     private Board Board;
     private Image thisImage;
+    int xOffset = 13; //in pixels
 
     public OnCardLeftDiscard<CardSpace, CardGroup> movedCard = new();
     public OnDiscardReset pileReset = new();
@@ -56,7 +57,18 @@ public class DiscardPile : CardGroup
             IsEmpty = true;
             TopCard = null;
             CardList.Clear();
+            return;
         }
+
+        TopCard = CardList.Last();
+
+        if (OptionsManager.DrawCount is not DrawType.Single)
+        {
+           
+            var topCardSpace = GameObject.Find($"{TopCard.CardValue} of {TopCard.CardSuit}");
+            topCardSpace.GetComponent<Drag>().enabled = true;
+        }
+        Debug.Log("Discard after move top = " + TopCard);
     }
     public void ResetDiscardPile()
     {
@@ -83,16 +95,20 @@ public class DiscardPile : CardGroup
 
         foreach (Transform child in transform) Destroy(child.gameObject);
     }
-    public void SpawnCard()
+    public void SpawnCard(int index)
     {
-
+        var pos = OptionsManager.DrawCount is DrawType.Single ? transform.position : 
+            new Vector3 (transform.position.x + (xOffset * index), transform.position.y, transform.position.z);
         var emptyCard = Resources.Load("CardUp");
-        var space = Instantiate(emptyCard, transform.position, Quaternion.identity, gameObject.transform);
+        var space = Instantiate(emptyCard, pos, Quaternion.identity, gameObject.transform);
         space.name = $"{TopCard.CardValue} of {TopCard.CardSuit}";
 
         var spaceData = space.GetComponent<CardSpace>();
         spaceData.CardData = TopCard;
         spaceData.SetCardSprite();
+
+        if (index+1 != OptionsManager.DrawCount.DrawCountAsValue())
+            space.GetComponent<Drag>().enabled = false;
 
     }
     public void UpdateSprite() => thisImage.sprite = this.GetSpriteForDiscard();
