@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -20,13 +21,20 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     public OnCardMovedToFoundation<CardSpace, CardGroup> movedToFoundation = new();
     public void Start()
     {
-        startPosition = transform.localPosition;
+        startPosition = transform.localPosition;// new Vector3(transform.localPosition.x, transform.position.y, transform.localPosition.z);
         thisImage = GetComponent<Image>();
         thisCard = GetComponent<CardSpace>();
 
         EventManager.AddCardInvoker(this);
     }
-
+    //void LateUpdate()
+    //{
+    //    if(startPosition == null || startPosition == new Vector3())
+    //    {
+    //        Debug.Log("local pos " + transform.localPosition + " pos pos " + transform.position);
+    //        startPosition = transform.localPosition;
+    //    }
+    //}
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!thisCard.CardData.IsFaceUp) return;
@@ -85,8 +93,10 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     }
     public void ResetPosition()
     {
+        Canvas.ForceUpdateCanvases();
+        Debug.Log("Local " + transform.localPosition);
         transform.localPosition = startPosition;
-
+        Debug.Log("start " + startPosition);
         if (!thisCard.CompareTag("DiscardCard"))
         {
             for (int i = 0; i < lowerSiblings.Count; i++)
@@ -95,7 +105,7 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
                 lowerSiblings[i].transform.localPosition = new Vector3(startPosition.x, startPosition.y - yOffset, lowerSiblings[i].transform.position.z);
             }
         }
-        
+
         UpdateLayoutGroup();
     }
     public void Dropped(CardGroup src, CardGroup dst)
@@ -105,21 +115,23 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         switch (tag)
         {
             case "Column":
-                {
-                    HandleMoveToSpace(src, dst);
-                    break;
-                }
+                HandleMoveToSpace(src, dst);
+                break;
             case "Foundation":
-                {
-                    HandleMoveToFoundation(src, dst);
-                    break;
-                }
-            case "DiscardPile"://non case
-                {
-                    return;
-                    break;
-                }
+                HandleMoveToFoundation(src, dst);
+                break;
+                
+            default:
+                ResetPosition();
+                break;
         }
+        //case "DiscardPile"://non case
+        //    {
+        //        //return;
+        //        break;
+        //    }
+        
+        UpdateLayoutGroup();
     }
     private void HandleMoveToSpace(CardGroup src, CardGroup dst)//Source is currently tab only, but in future might be from discard
     {
@@ -161,11 +173,15 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         movedToTab.AddListener(handler);
     }
     
-    IEnumerator UpdateLayoutGroup()
+    void UpdateLayoutGroup()
     {
-        var layoutGroupComponent = gameObject.GetComponent<LayoutGroup>();
+        Canvas.ForceUpdateCanvases();
+        var layoutGroupComponent = gameObject.GetComponentInParent<LayoutGroup>();
+        Debug.Log("a layout "+ layoutGroupComponent);
         layoutGroupComponent.enabled = false;
-        yield return new WaitForEndOfFrame();
+        //yield return new WaitForEndOfFrame();
         layoutGroupComponent.enabled = true;
+        EditorApplication.QueuePlayerLoopUpdate();
+        
     }
 }

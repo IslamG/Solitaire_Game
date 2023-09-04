@@ -155,10 +155,10 @@ public class ButtonControls : MonoBehaviour
     {
         switch (GameDropDown.value)
         {
-            case 1: GameDropDown.SetValueWithoutNotify(0); Camera.main.GetComponent<Board>().NewGame();  break;
-            case 2: GameDropDown.SetValueWithoutNotify(0); ShowCardOptionsWindow(); break;
-            case 3: GameDropDown.SetValueWithoutNotify(0); ShowGameOptionsWindow(); break;
-            case 4: GameDropDown.SetValueWithoutNotify(0); CloseButton();  break;
+            case 0: GameDropDown.SetValueWithoutNotify(4); Camera.main.GetComponent<Board>().NewGame();  break;
+            case 1: GameDropDown.SetValueWithoutNotify(4); ShowCardOptionsWindow(); break;
+            case 2: GameDropDown.SetValueWithoutNotify(4); ShowGameOptionsWindow(); break;
+            case 3: GameDropDown.SetValueWithoutNotify(4); CloseButton();  break;
         }
 
         GameDropDown.captionText.text = "Game";

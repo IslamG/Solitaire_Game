@@ -230,7 +230,7 @@ public class Tablue : CardGroup
         {
             var emptyCard = Resources.Load("Empty");
             var space = Instantiate<GameObject>((GameObject)emptyCard, gameObject.transform);
-            space.transform.position = new Vector3(transform.position.x, ((33 * (i+1)) * -1)+142, transform.position.z);
+            space.transform.position = new Vector3(transform.position.x, ((63 * (i+1)) * -1), transform.position.z);
             space.name = $"{CardList[i].CardValue} of {CardList[i].CardSuit}";
             
             var spaceScript = space.GetComponent<CardSpace>();
@@ -249,7 +249,7 @@ public class Tablue : CardGroup
         CardList.Add(TopCard);
 
         var emptyCard = Resources.Load("Empty");
-        var space = Instantiate(emptyCard, new Vector3(transform.position.x, ((33 * (Index+1)) * -1)+142, transform.position.z), Quaternion.identity, gameObject.transform);
+        var space = Instantiate(emptyCard, new Vector3(transform.position.x, ((63 * (Index+1)) * -1), transform.position.z), Quaternion.identity, gameObject.transform);
         space.name = $"{TopCard.CardValue} of {TopCard.CardSuit}";
 
         var lastSpace = space.GetComponent<CardSpace>();

@@ -9,7 +9,7 @@ public class DiscardPile : CardGroup
     private DrawDeck DrawDeck;
     private Board Board;
     private Image thisImage;
-    int xOffset = 13; //in pixels
+    int xOffset = 33; //in pixels
 
     public OnCardLeftDiscard<CardSpace, CardGroup> movedCard = new();
     public OnDiscardReset pileReset = new();
