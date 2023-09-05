@@ -26,6 +26,13 @@ public class ButtonControls : MonoBehaviour
     bool lastHasStatusBar;
     bool lastHasScoring;
 
+
+    bool tempIsTimed;
+    bool tempHasStatusBar;
+    bool tempHasScoring;
+
+    
+
     [DllImport("user32.dll")]
     private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
     [DllImport("user32.dll")]
@@ -65,11 +72,13 @@ public class ButtonControls : MonoBehaviour
         lastIsTimed = OptionsManager.TimedGame;
         lastHasStatusBar = OptionsManager.HasStatusBar;
         lastHasScoring = OptionsManager.Scoring != ScoringType.None;
+      
+        // temp
+        tempIsTimed = OptionsManager.TimedGame;
+        tempHasStatusBar = OptionsManager.HasStatusBar;
+        tempHasScoring = OptionsManager.Scoring != ScoringType.None;
 
         EventManager.CardBackChangedInvoker(this);
-
-        //var c = GameDropDown.GetComponentsInChildren<Toggle>(true);
-        //Debug.Log("toggle 0 name " + c[0].name);
     }
 
     #region WindowHeader
@@ -218,11 +227,13 @@ public class ButtonControls : MonoBehaviour
     {
         switch (val)
         {
-            case 0: /*isTimed = !isTimed;*/ timer.SetActive(!lastIsTimed); (!lastIsTimed).SetTimedGame(); break;
-            case 1: /*hasStatusBar = !hasStatusBar;*/ StatusBar.SetActive(!lastHasStatusBar); (!lastHasStatusBar).SetHasStatusBar(); break;
+            case 0: tempIsTimed = !tempIsTimed; timer.SetActive(tempIsTimed); (tempIsTimed).SetTimedGame(); break;
+            case 1: tempHasStatusBar= !tempHasStatusBar; StatusBar.SetActive(tempHasStatusBar); (tempHasStatusBar).SetHasStatusBar(); break;
             case 2: break;
-            case 3: /*hasScoring = !hasScoring;*/ score.SetActive(!lastHasScoring); 
-                if (!lastHasScoring) 
+            case 3: 
+                tempHasScoring= !tempHasScoring;
+                score.SetActive(tempHasScoring); 
+                if (tempHasScoring) 
                     ScoringType.None.SetScoringType(); 
                 else
                     lastScoringType.SetScoringType(); 

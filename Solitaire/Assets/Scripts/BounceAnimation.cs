@@ -1,81 +1,80 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UI;
+//using static UnityEngine.ParticleSystem;
+//using Random = System.Random;
+
 //using Random = System.Random;
 
 public class BounceAnimation : MonoBehaviour
 {
     [SerializeField]
-    Transform cardPrefab;
+    RectTransform cardPrefab;
     [SerializeField]
     int cloneLimit;
+    [SerializeField]
+    RectTransform animationArea;
+
+    private bool isAnimating;
+    float animationDelay; 
+    float animationSpeed; 
 
     private int yOffset = -9;
     private int xOffset = -9;
     private int yOffsetSum = 0;
     private int xOffsetSum = 0;
 
-    private int initialArchHeight = 1;
-    private int bounceArchHeight = 1;
-    private int bounceDirection = 1;
+    private int initialArchHeight = 1; //For desc
+    private int bounceArchHeight = 10; //For asc
+    private int bounceDirection = 1; //R/L for X
 
-    private float topBorder;
+    //private float topBorder;
     private float bottomBorder;
     private float leftBorder;
     private float rightBorder;
 
-    //Random random = new Random();
     Vector3 position;
-    //Vector3 scale;
-    Transform clone;
+    RectTransform clone;
     ArchStates archState;
 
     int cloneCount = 0;
-    float lowerBound = 0;
+    //float lowerBound = 0;
     
     // Start is called before the first frame update
     void Start()
     {
+        isAnimating = true;
         position = transform.position;
-        //scale = transform.localScale;
+
+        animationDelay = Random.Range(0f, 0.15f);
+        animationSpeed = Random.Range(0.05f, 0.15f);
+
         bounceDirection = Random.Range(0, 2) * 2 - 1; //-1 || 1 for R/L X
-        initialArchHeight = Random.Range(5, 10); //??
+        initialArchHeight = Random.Range(5, bounceArchHeight); //??
         yOffset = Random.Range(-12, 3); //Initiated ascending
         xOffset= Random.Range(-16, -7);//??
 
-        topBorder = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).y; //top right
-        rightBorder = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x; //top right
-        bottomBorder = Camera.main.ScreenToWorldPoint(Vector3.zero).y; //bottom left
-        leftBorder = Camera.main.ScreenToWorldPoint(Vector3.zero).x; //bottom left
+        bottomBorder = animationArea.rect.height;
 
-        archState = ArchStates.Init;
+        //lowerBound = (Screen.height ) - cardPrefab.GetComponent<Image>().sprite.rect.height;
+        //Debug.Log("bottom screen " + bottomBorder + " lower bound " + lowerBound);
+        //Debug.Log($"area local {animationArea.localPosition} area position  {animationArea.position} area rect {animationArea.rect}");
 
-         
-        lowerBound = (Screen.height ) - cardPrefab.GetComponent<Image>().sprite.rect.height;
-        Debug.Log("bottom screen " + bottomBorder + " lower bound " + lowerBound);
-        //topBorder= stageDimensions.
-        InvokeRepeating("Clone", .5f, 0.05f);
+        InvokeRepeating("Clone", .5f, 0.05f);//animationDelay, animationSpeed
     }
     enum ArchStates
     {
         Init, Asc, Desc, InitBounce, BounceBottom, BounceSide
     }
+    void InitializeCard()
+    {
+
+    }
     void Clone()
     {
-        //Vector3 pos = Camera.main.WorldToViewportPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("W2VP " + pos);
-        //pos = Camera.main.WorldToScreenPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("W2SP " + pos);
-        //pos = Camera.main.ScreenToViewportPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("S2VP " + pos);
-        var pos = Camera.main.ScreenToWorldPoint(clone?.position ?? new Vector3(1,1,1));
-        Debug.Log("S2WP " + pos);
-        //pos = Camera.main.ViewportToWorldPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("V2WP " + pos);
-        //pos = Camera.main.ViewportToScreenPoint(clone?.localPosition ?? new Vector3());
-        //Debug.Log("V2SP " + pos);
-        //Debug.Log($"pos {pos} Screen h {Screen.height}");
+        var pos = clone?.localPosition ?? new Vector3();
         switch (archState)
         {
             case ArchStates.Init: 
@@ -84,49 +83,45 @@ public class BounceAnimation : MonoBehaviour
                 break;
             case ArchStates.Asc:
                 yOffset += 3;
-                if (initialArchHeight >= 15) //var upperBound?
+                if (initialArchHeight >= 10) //var upperBound?
                     archState = ArchStates.Desc;
                 break;
             case ArchStates.Desc:
                 yOffset -= 3;
-                //KeepFullyOnScreen(clone.gameObject, new Vector3(position.x + xOffsetSum, position.y + yOffsetSum, position.z));
-                if (pos.y <= bottomBorder+1.71)
+                if (Mathf.Abs(pos.y) >= (bottomBorder -(clone?.rect.height * 1.5 ?? 0))) //Change for better bottom check
                 {
                     archState = ArchStates.InitBounce;
-                    bounceArchHeight = 0;
+                    bounceArchHeight = 15;
                 }
                 break;
             case ArchStates.InitBounce:
                 Debug.Log("bouncing " + yOffset + " y pos " + pos.y);
-                yOffset = 0;
+                yOffset = Mathf.Abs(yOffset)/Random.Range(2, Random.Range(2,4));
                 xOffset += 2;
-                bounceArchHeight = Random.Range(7, 12); //bound or sum??
-                archState = ArchStates.BounceBottom;
+                initialArchHeight = Random.Range(5, bounceArchHeight); //bound or sum??
+                archState = ArchStates.Asc;
                 break;
-            case ArchStates.BounceBottom:
+            case ArchStates.BounceBottom: //Non case
                 yOffset += 5;
-                if (bounceArchHeight >= 13)
+                if (bounceArchHeight >= 10)
                     archState = ArchStates.Desc;
                 //yOffset *= -1;
                 break;
         }
-        //if (archHeight < 10 && yOffset < 0) yOffset *= -1;
-        // if (archHeight >= 10 && pos.y > bottomBorder)  yOffset -=1; //&& yOffsetSum > bottomBorder
-        //else if (archHeight >= 10 && pos.y < bottomBorder)  yOffset +=1;
-
-        Debug.Log("y pos " + pos.y);
+        //Debug.Log("y pos " + pos.y);
         //yOffset *= bounceDirection;
         xOffsetSum += xOffset;
         yOffsetSum += yOffset;
 
         var childPosition = new Vector3(position.x + xOffsetSum, position.y + yOffsetSum, position.z);
-        clone = cloneCount > 0 ? Instantiate(cardPrefab, childPosition, Quaternion.identity, transform) : Instantiate(cardPrefab, position, Quaternion.identity, transform);
-        //clone.transform.localPosition = childPosition;
+        clone = cloneCount > 0 ? 
+            Instantiate(cardPrefab, childPosition, Quaternion.identity, transform) : 
+            Instantiate(cardPrefab, position, Quaternion.identity, transform);
+        
         clone.name = "Clone";
-        // clone.GetComponent<Transform>().SetParent(transform);
 
-        if (archState is not ArchStates.BounceBottom && initialArchHeight < 15) initialArchHeight++;
-        if(archState is ArchStates.BounceBottom && bounceArchHeight < 13) bounceArchHeight++;
+        if (archState is ArchStates.Asc && initialArchHeight <= bounceArchHeight) initialArchHeight++;
+        //if(archState is ArchStates.BounceBottom && bounceArchHeight < 13) bounceArchHeight++;
         
         cloneCount++;
 
@@ -147,19 +142,80 @@ public class BounceAnimation : MonoBehaviour
 
         return newPos;
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void FixedUpdate()
     {
-        //cloneCount = GameObject.FindGameObjectsWithTag("Clone").Length;
-        //while (cloneCount < 15)
-        //{
-        //    StartCoroutine("Clone");
-        //    //Debug.Break();
-        //}
-        if (cloneCount >= cloneLimit) CancelInvoke("Clone");
+        //if (clone is not null) Debug.Log($"clone position {clone.position} clone local {clone.localPosition}");
+        if (isAnimating)
+        {
+            bool isFullyVisible = clone is not null ? IsInsideRect(clone) : true;
+            if (cloneCount >= cloneLimit || !isFullyVisible) CancelInvoke("Clone");
+        }
+        
+    }
+    private bool IsInsideRect(RectTransform clone)
+    {
+        var areaX = Mathf.Abs(animationArea.rect.x);
+        var areaY = Mathf.Abs(animationArea.rect.y);
+        var cloneX = Mathf.Abs(clone.localPosition.x);
+        var cloneY = Mathf.Abs(clone.localPosition.y);
+
+        //Debug.Log($"vars {areaX}, {areaY}  > {cloneX}, {cloneY}");
+        if(cloneX > areaX + (clone.rect.width * .6) )
+            if(cloneY > areaY + (clone.rect.height * .6))
+                return false;
+        return true;
     }
 }
+
+//    public bool Particle(int id, float x, float y, float sx, float sy)
+//    {
+
+//        if (sx == 0) sx = 2;
+
+//        var cx = (id % 4) * width;
+//        var cy = Mathf.Floor(id / 4) * height;
+
+//        //this.update = function() {
+
+//        x += sx;
+//        y += sy;
+
+//        if (x < (-cwidthhalf) || x > (canvas.width + cwidthhalf))
+//        {
+
+//            var index = particles.indexOf(this);
+//            particles.splice(index, 1);
+
+//            return false;
+
+//        }
+
+//        if (y > canvas.height - cheighthalf)
+//        {
+
+//            y = canvas.height - cheighthalf;
+//            sy = -sy * 0.85f;
+
+//        }
+
+//        sy += 0.98f;
+
+//        context.drawImage(image, cx, cy, width, height, Mathf.Floor(x - cwidthhalf), Mathf.Floor(y - cheighthalf), cwidth, cheight);
+
+//        return true;
+
+//        //}
+
+//    }
+
+//    //var image = document.createElement('img');
+//    //image.src = "";
+//	public void throwCard(int x, int y)
+//    {
+
+//        id = id > 0 ? id-- : 51;
+
+//        var particle = new Particle(id, x, y, Mathf.Floor(Random.Next() * 6 - 3) * 2, - Random.Next() * 16);
+//        particles.Add(particle);
+
+//    }
