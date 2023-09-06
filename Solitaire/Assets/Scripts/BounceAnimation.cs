@@ -50,8 +50,12 @@ public class BounceAnimation : MonoBehaviour
     ArchStates archState;
 
     int cloneCount = 0;
+    enum ArchStates
+    {
+        Init, Asc, Desc, InitBounce, BounceBottom, BounceSide
+    }
     //float lowerBound = 0;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -91,10 +95,18 @@ public class BounceAnimation : MonoBehaviour
         isAnimating= true;
         if(StartValue >= 0) InvokeRepeating("Clone", 0.5f, 0.02f);//animationDelay, animationSpeed
     }
-    enum ArchStates
+    public void ResetAnimaiton()
     {
-        Init, Asc, Desc, InitBounce, BounceBottom, BounceSide
+        CancelInvoke("Clone");
+        isAnimating = false;
+        StartValue = 13;
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        InitializeAnimation();
     }
+    
     void InitializeCard()
     {
         var tempData = new CardData(FoundationSuit, (CardValues)StartValue);

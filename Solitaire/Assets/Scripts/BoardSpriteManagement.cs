@@ -45,10 +45,10 @@ public static class BoardSpriteManagement
 
         return pile.TopCard.GetSpriteForCard();
     }
-    public static Sprite GetSpriteForDrawDeck(this CardGroup pile)
+    public static Sprite GetSpriteForDrawDeck(this CardGroup pile, bool canReset)
     {
         if (pile.IsEmpty)
-            return LoadByName($"{SpriteSheetName}_{EmptyNegativeIndex}");
+            return LoadByName($"{SpriteSheetName}_{(canReset? EmptyPositiveIndex : EmptyNegativeIndex)}");
 
         return LoadByName($"{SpriteSheetName}_{BackIndex}");
     }

@@ -94,5 +94,5 @@ public class DrawDeck : CardGroup
     }
     
 
-    public void UpdateSprite() => thisImage.sprite = this.GetSpriteForDrawDeck();
+    public void UpdateSprite() => thisImage.sprite = this.GetSpriteForDrawDeck(!DiscardPile?.IsEmpty ?? true && !OptionsManager.ExceededResets());
 }

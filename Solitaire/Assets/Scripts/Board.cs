@@ -108,6 +108,8 @@ public class Board : MonoBehaviour
     }
     private void ClearBoard()
     {
+        foreach (var a in FoundationAnimations) a.ResetAnimaiton();
+
         CardOptionsWindow.SetActive(false);
         GameOptionsWindow.SetActive(false);
         GenerateDeck();

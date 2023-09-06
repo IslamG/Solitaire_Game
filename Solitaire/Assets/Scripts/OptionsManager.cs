@@ -6,7 +6,8 @@ public static class OptionsManager
     public static bool HasStatusBar { get; private set; } = true;
     //public static bool HasScoring { get; private set; } = false;
     public static int CardBackIndex { get; private set; } = 52;
-    public static bool LimitDiscardResets { get; private set; } 
+    public static bool LimitDiscardResets { get; private set; }
+    public static int DiscardsUsed { get; private set; } = 0;
 
     public static void SetDrawType (this DrawType type) => DrawCount = type;
     public static void SetScoringType(this ScoringType type) => Scoring = type;
@@ -16,6 +17,7 @@ public static class OptionsManager
     public static void SetCardBack(this int index) => index.ChangeCardBack();
     public static int NumberOfAllowedResets() => Scoring is ScoringType.Vegas ? 3 : 3;
     public static int DrawCountAsValue(this DrawType drawType) => drawType is DrawType.Single ? 1 : 3;
+    public static bool ExceededResets() => LimitDiscardResets && DiscardsUsed == NumberOfAllowedResets();
 }
 public enum DrawType
 {

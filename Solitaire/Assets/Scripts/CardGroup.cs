@@ -25,6 +25,7 @@ public class CardGroup : MonoBehaviour
     }
     public CardSpace GetGroupCardSpace (CardData card) => CardList.Contains(card) ?
         GameObject.Find($"{card.CardValue} of {card.CardSuit}").GetComponent<CardSpace>() : null;
+
     public OnCardExposed cardTurned = new();
     public OnCardLeftTablue<CardSpace, CardGroup> recievedCard = new();
     public OnCardListLeftTablue<List<CardSpace>, CardGroup> recievedList = new();

@@ -7,13 +7,12 @@ using UnityEngine.EventSystems;
 
 public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField]
-    GameObject winWindow;
+    //[SerializeField]
+    //GameObject winWindow;
 
     Board board;
-
-    List<CardSpace> TabLeafs = new();
-    CardSpace DiscardTop;
+    bool moveMade = false;
+    bool isInit;
 
     public OnCardMovedToFoundation<CardSpace, CardGroup> movedToFoundation = new();
 
@@ -21,45 +20,71 @@ public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
     {
         board = Camera.main.GetComponent<Board>();
         EventManager.AddCardInvoker(this);
+        isInit = true;
     }
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Right) return;
         if (eventData.clickCount < 2) return;
-
+        
         //board.Win();
-        //GetTabLeafs();
-        DetectTabMove();
-    }
 
-    void DetectDiscardMove()
-    {
-
-    }
-    void GetTabLeafs()
-    {
-        foreach (var tab in board.Tablues)
+        isInit = true;
+        while (moveMade || isInit)
         {
-            Debug.Log("1 "+ tab);
-            if (tab.IsEmpty || tab.TopCard is null) continue;
-            
-            var topData = tab.GetGroupCardSpace(tab.TopCard);
-            TabLeafs.Add(topData);
+            moveMade = false;
+            isInit = false;
+
+            DetectDiscardMove();
+            DetectTabMove();
+            //Debug.Break();
         }
+
     }
-    void GetDiscardTop()
+
+    //void DetectDiscardMove()
+    //{
+
+    //}
+    //void GetTabLeafs()
+    //{
+    //    foreach (var tab in board.Tablues)
+    //    {
+    //        Debug.Log("1 "+ tab);
+    //        if (tab.IsEmpty || tab.TopCard is null) continue;
+            
+    //        var topData = tab.GetGroupCardSpace(tab.TopCard);
+    //        TabLeafs.Add(topData);
+    //    }
+    //}
+    void DetectDiscardMove()
     {
         if (Board.DiscardPile is null) return;
         if (Board.DiscardPile.IsEmpty) return;
         if (Board.DiscardPile.TopCard is null) return;
 
         var topData = Board.DiscardPile.GetGroupCardSpace(Board.DiscardPile.TopCard);
-        DiscardTop = topData.GetComponent<CardSpace>();
+
+        foreach (var foundation in board.Foundations)
+        {
+            
+            var move = board.ValidCardMove(topData, foundation);
+            Debug.Log("foundation " + foundation + " is " + move + " for " + topData);
+            if (!move) continue;
+
+            moveMade = true;
+            //tab.MoveToFoundation(tabTop);
+            movedToFoundation.Invoke(topData, foundation);
+            Destroy(topData.gameObject);
+        }
     }
     void DetectTabMove() 
     { 
         foreach(var tab in board.Tablues)
         {
+            if (tab is null) continue;
+            if (tab.IsEmpty || tab.TopCard is null) continue; 
+
             foreach(var foundation in board.Foundations)
             {
                 var topData = tab.GetGroupCardSpace(tab.TopCard);
@@ -67,6 +92,7 @@ public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
                 Debug.Log("foundation " + foundation + " is " + move +" for " +topData);
                 if (!move) continue;
 
+                moveMade = true;
                 //tab.MoveToFoundation(tabTop);
                 movedToFoundation.Invoke(topData, foundation);
                 Destroy(topData.gameObject);
