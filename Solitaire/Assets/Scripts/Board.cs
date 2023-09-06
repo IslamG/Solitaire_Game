@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static GameState;
 
@@ -17,6 +18,8 @@ public class Board : MonoBehaviour
     GameObject CardOptionsWindow;
     [SerializeField]
     GameObject GameOptionsWindow;
+    [SerializeField]
+    BounceAnimation[] FoundationAnimations;
 
     public List<Tablue> Tablues = new();
     public List<Foundation> Foundations = new();
@@ -24,7 +27,7 @@ public class Board : MonoBehaviour
     public static Board Instance { get; private set; }
 
     private int maxedFoundations = 0;
-
+    private bool isGameOver = false;
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -52,20 +55,36 @@ public class Board : MonoBehaviour
         ScoreManager.AddAsListener();
 
         EventManager.FoundationMaxed(FoundationMaxed);
-
+        isGameOver = false;
         //if (OptionsManager.DrawCount is not DrawType.Single)
         //{
         //   //GameObject.Find("Empty1").tan.position = ;
         //}
 
     }
+    public void Win()
+    {  
+        ClearBoard();
+        isGameOver = true;
+        for (int i = 0; i < FOUNDATION_COUNT; i++)
+        {
+            FoundationAnimations[i].StartAnimating((CardSuits)i);
+        }
+    }
     private void FoundationMaxed()
     {
         maxedFoundations++;
         if (maxedFoundations == FOUNDATION_COUNT)
         {
+            var suits = Foundations.Select(f=> f.Suit).ToList();
             Debug.Log("Game won, Score " + ScoreManager.GetFinalScore());
             Timer.Stop();
+            ClearBoard();
+            isGameOver = true;
+            for(int i = 0; i< FOUNDATION_COUNT; i++)
+            {
+                FoundationAnimations[i].StartAnimating(suits[i]);
+            }
         }
     }
     private void InitializeTablues()
@@ -87,8 +106,7 @@ public class Board : MonoBehaviour
             Foundations.Add(f);
         }
     }
-
-    public void NewGame()
+    private void ClearBoard()
     {
         CardOptionsWindow.SetActive(false);
         GameOptionsWindow.SetActive(false);
@@ -99,7 +117,7 @@ public class Board : MonoBehaviour
         DrawDeck.ResetGroup();
         DrawDeck.UpdateSprite();
 
-        foreach (var f in Foundations) 
+        foreach (var f in Foundations)
         {
             f.ResetGroup();
             f.UpdateSprite();
@@ -110,6 +128,11 @@ public class Board : MonoBehaviour
             t.ResetGroup();
             foreach (Transform child in t.transform) Destroy(child.gameObject);
         }
+    }
+    public void NewGame()
+    {
+        isGameOver = false;
+        ClearBoard();
         InitializeTablues();
         InitializeFoundations();
         DrawDeck.Initialize();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using static GameState;
 //using static UnityEngine.ParticleSystem;
 //using Random = System.Random;
 
@@ -16,8 +17,17 @@ public class BounceAnimation : MonoBehaviour
     int cloneLimit;
     [SerializeField]
     RectTransform animationArea;
+    [SerializeField]
+    float minAnimationDelay;
+    [SerializeField]
+    float maxAnimationSpeed;
 
-    private bool isAnimating;
+    Sprite theSprite;
+
+    CardSuits FoundationSuit;
+    int StartValue = 13; 
+
+    private bool isAnimating = true;
     float animationDelay; 
     float animationSpeed; 
 
@@ -45,24 +55,41 @@ public class BounceAnimation : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isAnimating = true;
+        //board = Camera.main.GetComponent<Board>();
+
+        //isAnimating = true;
         position = transform.position;
 
-        animationDelay = Random.Range(0f, 0.15f);
-        animationSpeed = Random.Range(0.05f, 0.15f);
+        bottomBorder = animationArea.rect.height;
+
+        InitializeAnimation();
+        //lowerBound = (Screen.height ) - card.GetComponent<Image>().sprite.rect.height;
+        //Debug.Log("bottom screen " + bottomBorder + " lower bound " + lowerBound);
+        //Debug.Log($"area local {animationArea.localPosition} area position  {animationArea.position} area rect {animationArea.rect}");
+
+
+    }
+    void InitializeAnimation()
+    {
+        animationDelay = Random.Range(minAnimationDelay, 0.5f);
+        animationSpeed = Random.Range(0.01f, maxAnimationSpeed);
 
         bounceDirection = Random.Range(0, 2) * 2 - 1; //-1 || 1 for R/L X
         initialArchHeight = Random.Range(5, bounceArchHeight); //??
         yOffset = Random.Range(-12, 3); //Initiated ascending
-        xOffset= Random.Range(-16, -7);//??
-
-        bottomBorder = animationArea.rect.height;
-
-        //lowerBound = (Screen.height ) - cardPrefab.GetComponent<Image>().sprite.rect.height;
-        //Debug.Log("bottom screen " + bottomBorder + " lower bound " + lowerBound);
-        //Debug.Log($"area local {animationArea.localPosition} area position  {animationArea.position} area rect {animationArea.rect}");
-
-        InvokeRepeating("Clone", .5f, 0.05f);//animationDelay, animationSpeed
+        xOffset = Random.Range(-16, -7);//??
+        yOffsetSum = 0;
+        xOffsetSum = 0;
+        cloneCount = 0;
+        clone = null;
+    }
+    public void StartAnimating(CardSuits suit)
+    {
+        FoundationSuit = suit;
+        Debug.Log("I am " + gameObject.name +" suite "+ FoundationSuit);
+        InitializeCard();
+        isAnimating= true;
+        if(StartValue >= 0) InvokeRepeating("Clone", 0.5f, 0.02f);//animationDelay, animationSpeed
     }
     enum ArchStates
     {
@@ -70,7 +97,15 @@ public class BounceAnimation : MonoBehaviour
     }
     void InitializeCard()
     {
-
+        var tempData = new CardData(FoundationSuit, (CardValues)StartValue);
+        tempData.IsFaceUp= true;
+        //Debug.Log("Getting sprite for "+ tempData);
+        theSprite = tempData.GetSpriteForCard();
+        StartValue--;
+        if (StartValue == 0) 
+        { 
+            isAnimating = false; 
+        }
     }
     void Clone()
     {
@@ -119,6 +154,7 @@ public class BounceAnimation : MonoBehaviour
             Instantiate(cardPrefab, position, Quaternion.identity, transform);
         
         clone.name = "Clone";
+        clone.GetComponent<Image>().sprite = theSprite;
 
         if (archState is ArchStates.Asc && initialArchHeight <= bounceArchHeight) initialArchHeight++;
         //if(archState is ArchStates.BounceBottom && bounceArchHeight < 13) bounceArchHeight++;
@@ -148,7 +184,13 @@ public class BounceAnimation : MonoBehaviour
         if (isAnimating)
         {
             bool isFullyVisible = clone is not null ? IsInsideRect(clone) : true;
-            if (cloneCount >= cloneLimit || !isFullyVisible) CancelInvoke("Clone");
+            if (cloneCount >= cloneLimit || !isFullyVisible)
+            {
+                CancelInvoke("Clone");
+                InitializeAnimation();
+                //InitializeCard();
+                StartAnimating(FoundationSuit);
+            }
         }
         
     }
