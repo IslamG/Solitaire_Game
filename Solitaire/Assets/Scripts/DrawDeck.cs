@@ -88,7 +88,7 @@ public class DrawDeck : CardGroup
         if (OptionsManager.DrawCount is not DrawType.Single)
         {
 
-            var topCardSpace = GameObject.Find($"{DiscardPile.TopCard.CardValue} of {DiscardPile.TopCard.CardSuit}");
+            var topCardSpace = DiscardPile.GetGroupCardSpace(DiscardPile.TopCard);
             topCardSpace.GetComponent<Drag>().enabled = true;
         }
     }

@@ -65,7 +65,7 @@ public class DiscardPile : CardGroup
         if (OptionsManager.DrawCount is not DrawType.Single)
         {
            
-            var topCardSpace = GameObject.Find($"{TopCard.CardValue} of {TopCard.CardSuit}");
+            var topCardSpace = GetGroupCardSpace(TopCard);
             topCardSpace.GetComponent<Drag>().enabled = true;
         }
         Debug.Log("Discard after move top = " + TopCard);

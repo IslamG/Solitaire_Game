@@ -10,6 +10,7 @@ public static class EventManager
     static DiscardPile discardInvoker = new DiscardPile(); 
     static List<Foundation> maxInvokers= new List<Foundation>();
     static ButtonControls cardChangeInvoker = new ButtonControls();
+    static AutoMoveToFoundation autoMoverInvoker = new AutoMoveToFoundation();
 
     static List<UnityAction<CardSpace, CardGroup>> discardMovedListeners = new List<UnityAction<CardSpace, CardGroup>>();
     static List<UnityAction> cardExposedListeners = new List<UnityAction>();
@@ -83,6 +84,16 @@ public static class EventManager
             card.AddListener(listener);
         }
     }
+    public static void AddCardInvoker(AutoMoveToFoundation autoMover)
+    {
+        //A card that has been moved, yelling
+        //Who wants to know that a card is gonna drop
+        autoMoverInvoker = autoMover;
+        foreach (UnityAction<CardSpace, CardGroup> listener in droppedOnListeners)
+        {
+            autoMover.AddListener(listener);
+        }
+    }
     /// <summary>
     /// A card that was recieved, telling its place has been changed
     /// Who wants to know that a card is no longer home
@@ -123,6 +134,7 @@ public static class EventManager
         {
             card.AddListener(handler);
         }
+        autoMoverInvoker.AddListener(handler);
     }
     /// <summary>
     /// A list of cards is dropping, am I, as a group relevant?
@@ -168,9 +180,6 @@ public static class EventManager
     //Listen to score and else ?
     public static void CardMovedFromDiscard(UnityAction<CardSpace, CardGroup> handler)
     {
-        Debug.Log("card moved from discard handler " + handler);
-        Debug.Log("card moved from discard listers " + discardMovedListeners);
-        Debug.Log("card moved from discard invokers " + discardInvoker);
         discardMovedListeners.Add(handler);
         discardInvoker.AddListener(handler);
     }
