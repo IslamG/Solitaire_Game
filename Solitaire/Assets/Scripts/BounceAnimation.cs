@@ -25,9 +25,11 @@ public class BounceAnimation : MonoBehaviour
     Sprite theSprite;
 
     CardSuits FoundationSuit;
-    int StartValue = 13; 
+    int StartValue = MAX_CARD_VALUE; 
 
     private bool isAnimating = true;
+    public bool IsAnimating => isAnimating;
+
     float animationDelay; 
     float animationSpeed; 
 
@@ -75,6 +77,8 @@ public class BounceAnimation : MonoBehaviour
     }
     void InitializeAnimation()
     {
+        Debug.Log("In init animation " + StartValue);
+
         animationDelay = Random.Range(minAnimationDelay, 0.5f);
         animationSpeed = Random.Range(0.01f, maxAnimationSpeed);
 
@@ -89,35 +93,44 @@ public class BounceAnimation : MonoBehaviour
     }
     public void StartAnimating(CardSuits suit)
     {
+        Debug.Log("In starting animation before " + StartValue);
         FoundationSuit = suit;
         Debug.Log("I am " + gameObject.name +" suite "+ FoundationSuit);
         InitializeCard();
-        isAnimating= true;
-        if(StartValue >= 0) InvokeRepeating("Clone", 0.5f, 0.02f);//animationDelay, animationSpeed
+        Debug.Log("In starting animation after " + StartValue);
+        if (StartValue >= 0)
+        {
+            isAnimating = true;
+            InvokeRepeating("Clone", 0.5f, 0.02f);//animationDelay, animationSpeed
+        }
     }
     public void ResetAnimaiton()
     {
+        Debug.Log("In Reset animation before " + StartValue);
         CancelInvoke("Clone");
         isAnimating = false;
-        StartValue = 13;
+        StartValue = MAX_CARD_VALUE;
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject);
         }
         InitializeAnimation();
+        Debug.Log("In reset animation after" + StartValue);
     }
     
     void InitializeCard()
     {
+        Debug.Log("In init card before " + StartValue);
         var tempData = new CardData(FoundationSuit, (CardValues)StartValue);
         tempData.IsFaceUp= true;
         //Debug.Log("Getting sprite for "+ tempData);
         theSprite = tempData.GetSpriteForCard();
         StartValue--;
-        if (StartValue == 0) 
+        if (StartValue < 0) 
         { 
             isAnimating = false; 
         }
+        Debug.Log("In init card after " + StartValue);
     }
     void Clone()
     {

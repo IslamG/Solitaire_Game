@@ -26,7 +26,7 @@ public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button != PointerEventData.InputButton.Right) return;
         if (eventData.clickCount < 2) return;
-        
+
         //board.Win();
 
         isInit = true;

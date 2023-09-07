@@ -8,10 +8,6 @@ public class Board : MonoBehaviour
     public const int FOUNDATION_COUNT = 4;
     public const int TAB_COUNT = 7;
 
-    public static DrawDeck DrawDeck;
-    public static DiscardPile DiscardPile;
-    public static ScoreManager ScoreManager;
-    
     [SerializeField]
     Timer Timer;
     [SerializeField]
@@ -19,15 +15,18 @@ public class Board : MonoBehaviour
     [SerializeField]
     GameObject GameOptionsWindow;
     [SerializeField]
-    BounceAnimation[] FoundationAnimations;
+    WinManager WinManager;
 
-    public List<Tablue> Tablues = new();
-    public List<Foundation> Foundations = new();
-
+    public static DrawDeck DrawDeck;
+    public static DiscardPile DiscardPile;
+    public static ScoreManager ScoreManager;
+    public readonly List<Tablue> Tablues = new();
+    public readonly List<Foundation> Foundations = new();
     public static Board Instance { get; private set; }
 
     private int maxedFoundations = 0;
     private bool isGameOver = false;
+
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -56,20 +55,13 @@ public class Board : MonoBehaviour
 
         EventManager.FoundationMaxed(FoundationMaxed);
         isGameOver = false;
-        //if (OptionsManager.DrawCount is not DrawType.Single)
-        //{
-        //   //GameObject.Find("Empty1").tan.position = ;
-        //}
 
     }
     public void Win()
     {  
         ClearBoard();
         isGameOver = true;
-        for (int i = 0; i < FOUNDATION_COUNT; i++)
-        {
-            FoundationAnimations[i].StartAnimating((CardSuits)i);
-        }
+        WinManager.Won();
     }
     private void FoundationMaxed()
     {
@@ -79,12 +71,7 @@ public class Board : MonoBehaviour
             var suits = Foundations.Select(f=> f.Suit).ToList();
             Debug.Log("Game won, Score " + ScoreManager.GetFinalScore());
             Timer.Stop();
-            ClearBoard();
-            isGameOver = true;
-            for(int i = 0; i< FOUNDATION_COUNT; i++)
-            {
-                FoundationAnimations[i].StartAnimating(suits[i]);
-            }
+            Win();
         }
     }
     private void InitializeTablues()
@@ -108,7 +95,8 @@ public class Board : MonoBehaviour
     }
     private void ClearBoard()
     {
-        foreach (var a in FoundationAnimations) a.ResetAnimaiton();
+        
+        WinManager.ResetAnimations();
 
         CardOptionsWindow.SetActive(false);
         GameOptionsWindow.SetActive(false);
