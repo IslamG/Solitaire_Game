@@ -10,7 +10,6 @@ public class Drop : MonoBehaviour, IDropHandler
     {
         //pointer is source of drop call
         //This class is destination
-        Debug.Log("on drop " + eventData.pointerDrag);
         if (eventData.pointerDrag.CompareTag("CardSpace") || eventData.pointerDrag.CompareTag("DiscardCard"))
         {
             var cardData = eventData.pointerDrag.GetComponent<CardSpace>();
@@ -21,7 +20,6 @@ public class Drop : MonoBehaviour, IDropHandler
             var board = Camera.main.GetComponent<Board>();
             if (board is null) return;
 
-            Debug.Log("the card " + cardData + " dst " + GetComponent<CardGroup>());
             var move = board.ValidCardMove(cardData, GetComponent<CardGroup>());
             if(!move)
             {

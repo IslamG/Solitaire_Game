@@ -1,13 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using static GameState;
-//using static UnityEngine.ParticleSystem;
-//using Random = System.Random;
-
-//using Random = System.Random;
 
 public class BounceAnimation : MonoBehaviour
 {
@@ -17,9 +10,7 @@ public class BounceAnimation : MonoBehaviour
     int cloneLimit;
     [SerializeField]
     RectTransform animationArea;
-    [SerializeField]
     float minAnimationDelay;
-    [SerializeField]
     float maxAnimationSpeed;
 
     Sprite theSprite;
@@ -56,28 +47,23 @@ public class BounceAnimation : MonoBehaviour
     {
         Init, Asc, Desc, InitBounce, BounceBottom, BounceSide
     }
-    //float lowerBound = 0;
-
-    // Start is called before the first frame update
     void Start()
     {
-        //board = Camera.main.GetComponent<Board>();
-
         //isAnimating = true;
         position = transform.position;
 
         bottomBorder = animationArea.rect.height;
 
         InitializeAnimation();
-        //lowerBound = (Screen.height ) - card.GetComponent<Image>().sprite.rect.height;
-        //Debug.Log("bottom screen " + bottomBorder + " lower bound " + lowerBound);
-        //Debug.Log($"area local {animationArea.localPosition} area position  {animationArea.position} area rect {animationArea.rect}");
 
 
     }
     void InitializeAnimation()
     {
-        Debug.Log("In init animation " + StartValue);
+        //animationDelay = Random.Range(minAnimationDelay, 0.5f);
+        //animationSpeed = Random.Range(0.01f, maxAnimationSpeed);  //animationDelay, animationSpeed  0.5f, 0.02f
+        minAnimationDelay = Random.Range(0.1f, 0.8f);
+        maxAnimationSpeed = Random.Range(0.02f, 0.05f);
 
         animationDelay = Random.Range(minAnimationDelay, 0.5f);
         animationSpeed = Random.Range(0.01f, maxAnimationSpeed);
@@ -93,20 +79,16 @@ public class BounceAnimation : MonoBehaviour
     }
     public void StartAnimating(CardSuits suit)
     {
-        Debug.Log("In starting animation before " + StartValue);
         FoundationSuit = suit;
-        Debug.Log("I am " + gameObject.name +" suite "+ FoundationSuit);
         InitializeCard();
-        Debug.Log("In starting animation after " + StartValue);
         if (StartValue >= 0)
         {
             isAnimating = true;
-            InvokeRepeating("Clone", 0.5f, 0.02f);//animationDelay, animationSpeed
+            InvokeRepeating("Clone", animationDelay, animationSpeed);//animationDelay, animationSpeed //0.5f, 0.02f
         }
     }
     public void ResetAnimaiton()
     {
-        Debug.Log("In Reset animation before " + StartValue);
         CancelInvoke("Clone");
         isAnimating = false;
         StartValue = MAX_CARD_VALUE;
@@ -115,22 +97,18 @@ public class BounceAnimation : MonoBehaviour
             Destroy(child.gameObject);
         }
         InitializeAnimation();
-        Debug.Log("In reset animation after" + StartValue);
     }
     
     void InitializeCard()
     {
-        Debug.Log("In init card before " + StartValue);
         var tempData = new CardData(FoundationSuit, (CardValues)StartValue);
         tempData.IsFaceUp= true;
-        //Debug.Log("Getting sprite for "+ tempData);
         theSprite = tempData.GetSpriteForCard();
         StartValue--;
         if (StartValue < 0) 
         { 
             isAnimating = false; 
         }
-        Debug.Log("In init card after " + StartValue);
     }
     void Clone()
     {
@@ -155,7 +133,6 @@ public class BounceAnimation : MonoBehaviour
                 }
                 break;
             case ArchStates.InitBounce:
-                Debug.Log("bouncing " + yOffset + " y pos " + pos.y);
                 yOffset = Mathf.Abs(yOffset)/Random.Range(2, Random.Range(2,4));
                 xOffset += 2;
                 initialArchHeight = Random.Range(5, bounceArchHeight); //bound or sum??
@@ -165,11 +142,8 @@ public class BounceAnimation : MonoBehaviour
                 yOffset += 5;
                 if (bounceArchHeight >= 10)
                     archState = ArchStates.Desc;
-                //yOffset *= -1;
                 break;
         }
-        //Debug.Log("y pos " + pos.y);
-        //yOffset *= bounceDirection;
         xOffsetSum += xOffset;
         yOffsetSum += yOffset;
 
@@ -182,7 +156,6 @@ public class BounceAnimation : MonoBehaviour
         clone.GetComponent<Image>().sprite = theSprite;
 
         if (archState is ArchStates.Asc && initialArchHeight <= bounceArchHeight) initialArchHeight++;
-        //if(archState is ArchStates.BounceBottom && bounceArchHeight < 13) bounceArchHeight++;
         
         cloneCount++;
 
@@ -205,7 +178,6 @@ public class BounceAnimation : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        //if (clone is not null) Debug.Log($"clone position {clone.position} clone local {clone.localPosition}");
         if (isAnimating)
         {
             bool isFullyVisible = clone is not null ? IsInsideRect(clone) : true;
@@ -233,56 +205,3 @@ public class BounceAnimation : MonoBehaviour
         return true;
     }
 }
-
-//    public bool Particle(int id, float x, float y, float sx, float sy)
-//    {
-
-//        if (sx == 0) sx = 2;
-
-//        var cx = (id % 4) * width;
-//        var cy = Mathf.Floor(id / 4) * height;
-
-//        //this.update = function() {
-
-//        x += sx;
-//        y += sy;
-
-//        if (x < (-cwidthhalf) || x > (canvas.width + cwidthhalf))
-//        {
-
-//            var index = particles.indexOf(this);
-//            particles.splice(index, 1);
-
-//            return false;
-
-//        }
-
-//        if (y > canvas.height - cheighthalf)
-//        {
-
-//            y = canvas.height - cheighthalf;
-//            sy = -sy * 0.85f;
-
-//        }
-
-//        sy += 0.98f;
-
-//        context.drawImage(image, cx, cy, width, height, Mathf.Floor(x - cwidthhalf), Mathf.Floor(y - cheighthalf), cwidth, cheight);
-
-//        return true;
-
-//        //}
-
-//    }
-
-//    //var image = document.createElement('img');
-//    //image.src = "";
-//	public void throwCard(int x, int y)
-//    {
-
-//        id = id > 0 ? id-- : 51;
-
-//        var particle = new Particle(id, x, y, Mathf.Floor(Random.Next() * 6 - 3) * 2, - Random.Next() * 16);
-//        particles.Add(particle);
-
-//    }

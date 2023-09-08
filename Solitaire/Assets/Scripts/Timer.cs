@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -24,23 +22,29 @@ public class Timer : MonoBehaviour
     #endregion
 
     //void Update() { TotalTime += Time.deltaTime; TimerTitle.text = TotalTime.ToString(); }
-
+    private void Start()
+    {
+        InitializeTimer();
+    }
     public void InitializeTimer()
     {
         IsTimed = OptionsManager.TimedGame;
+        running = IsTimed;
         TotalTime = 0;
     }
     private void DeductPoints()//Per update? late update?
     {
+       // Debug.Log("trying " + ElapsedTime + " timed  " + IsTimed);
         if (!IsTimed) return;
         if (OptionsManager.DrawCount is not DrawType.Single) return;
         if (ElapsedTime < 10) return;
 
         //ElapsedTime++;
+        //Debug.Log("Deducting at " + ElapsedTime);
         if (ElapsedTime >= 10)
         {
             ElapsedTime = 0;
-            //points -2;
+            ScoreManager.DeductFromScore(2);
         }
     }
 
@@ -118,8 +122,10 @@ public class Timer : MonoBehaviour
             //{
             //    running = false;
             //}
+            DeductPoints();
+            TimerTitle.text = ((int)TotalTime).ToString();
         }
-        TimerTitle.text = ((int)TotalTime).ToString();
+        
     }
 
     /// <summary>

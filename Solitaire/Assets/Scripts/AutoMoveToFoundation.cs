@@ -1,15 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
 {
-    //[SerializeField]
-    //GameObject winWindow;
-
     Board board;
     bool moveMade = false;
     bool isInit;
@@ -37,26 +31,10 @@ public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
 
             DetectDiscardMove();
             DetectTabMove();
-            //Debug.Break();
         }
 
     }
 
-    //void DetectDiscardMove()
-    //{
-
-    //}
-    //void GetTabLeafs()
-    //{
-    //    foreach (var tab in board.Tablues)
-    //    {
-    //        Debug.Log("1 "+ tab);
-    //        if (tab.IsEmpty || tab.TopCard is null) continue;
-            
-    //        var topData = tab.GetGroupCardSpace(tab.TopCard);
-    //        TabLeafs.Add(topData);
-    //    }
-    //}
     void DetectDiscardMove()
     {
         if (Board.DiscardPile is null) return;
@@ -69,11 +47,9 @@ public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
         {
             
             var move = board.ValidCardMove(topData, foundation);
-            Debug.Log("foundation " + foundation + " is " + move + " for " + topData);
             if (!move) continue;
 
             moveMade = true;
-            //tab.MoveToFoundation(tabTop);
             movedToFoundation.Invoke(topData, foundation);
             Destroy(topData.gameObject);
         }
@@ -89,11 +65,9 @@ public class AutoMoveToFoundation : MonoBehaviour, IPointerClickHandler
             {
                 var topData = tab.GetGroupCardSpace(tab.TopCard);
                 var move = board.ValidCardMove(topData, foundation);
-                Debug.Log("foundation " + foundation + " is " + move +" for " +topData);
                 if (!move) continue;
 
                 moveMade = true;
-                //tab.MoveToFoundation(tabTop);
                 movedToFoundation.Invoke(topData, foundation);
                 Destroy(topData.gameObject);
             }

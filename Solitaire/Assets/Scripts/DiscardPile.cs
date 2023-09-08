@@ -68,7 +68,6 @@ public class DiscardPile : CardGroup
             var topCardSpace = GetGroupCardSpace(TopCard);
             topCardSpace.GetComponent<Drag>().enabled = true;
         }
-        Debug.Log("Discard after move top = " + TopCard);
     }
     public void ResetDiscardPile()
     {
@@ -79,7 +78,11 @@ public class DiscardPile : CardGroup
             return;
         }
 
-        if (CardList.Count == 0) return; 
+        if (CardList.Count == 0)
+        {
+            DrawDeck.UpdateSprite();
+            return;
+        }
         
         CardList.Reverse();
         DrawDeck.CardList.AddRange(CardList);

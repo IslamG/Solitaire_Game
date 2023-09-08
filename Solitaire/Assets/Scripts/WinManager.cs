@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -39,6 +38,8 @@ public class WinManager : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if (!board.IsGameOver) return;
+
         if (foundationAnimation.Any(x => x.IsAnimating) && !animationsStarted) { animationsStarted = true; animationsFinished = false; }
         if (foundationAnimation.All(x => !x.IsAnimating) && !animationsFinished) AnimationEnd();
         if (animationsStarted && !animationsFinished && Input.GetKeyDown(KeyCode.Escape)) AnimationEnd();
@@ -59,13 +60,16 @@ public class WinManager : MonoBehaviour
     void SetScore()
     {
         var labels = WinDialogue.GetComponentsInChildren<TextMeshProUGUI>();
-        labels.First(l => l.name == "ScoreValue").text = ScoreManager.FinalScore.ToString();
-        labels.First(l => l.name == "TimeValue").text = "0";// ScoreManager.Timer.TotalTime.ToString();
-        labels.First(l => l.name == "BonusValue").text = ScoreManager.BonusScore.ToString();
-        labels.First(l => l.name == "TotalValue").text = ScoreManager.GetFinalScore().ToString();
+        labels.First(l => l.name == "ScoreValue").text = ScoreManager.FinalScore.ToString("N0");
+        labels.First(l => l.name == "TimeValue").text =  GameObject.Find("Timer").GetComponent<Timer>().TotalTime.ToString("N0");
+        ScoreManager.CalculateBonus();
+        labels.First(l => l.name == "BonusValue").text = ScoreManager.BonusScore.ToString("N0");
+        labels.First(l => l.name == "TotalValue").text = ScoreManager.GetFinalScore().ToString("N0");
     }
     public void StartAnimations()
     {
+        if (!board.IsGameOver) return;
+
         for (int i = 0; i < Board.FOUNDATION_COUNT; i++)
         {
             foundationAnimation[i].StartAnimating((CardSuits)i);
@@ -73,6 +77,8 @@ public class WinManager : MonoBehaviour
     }
     public void Won()
     {
+        if (!board.IsGameOver) return;
+
         foreach (var anim in foundationAnimation) anim.ResetAnimaiton();
         EscapeHintText.SetActive(true);
         StartAnimations();

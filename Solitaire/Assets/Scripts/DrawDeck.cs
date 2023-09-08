@@ -33,6 +33,7 @@ public class DrawDeck : CardGroup
     {
         DiscardPile = Board.DiscardPile;
         EventManager.CardBackChanged(UpdateSprite);
+        //EventManager.Card(UpdateSprite);
     }
     public void Initialize()
     {
@@ -48,19 +49,14 @@ public class DrawDeck : CardGroup
 
         var draw = OptionsManager.DrawCount is DrawType.Single ? 1 : 3;
         int count = 0;
-        Debug.Log("Discarding card " + draw);
-        if (OptionsManager.DrawCount is not DrawType.Single)
+        
+        var deckPosition = DiscardPile.gameObject.transform.position;
+        foreach (Transform child in DiscardPile.transform)
         {
-            var deckPosition = DiscardPile.gameObject.transform.position;
-            Debug.Log("get children " + DiscardPile.transform);
-            foreach (Transform child in DiscardPile.transform)
-            {
-                Debug.Log($"the child {child} deck position {deckPosition}");
-                child.transform.position = new Vector3(deckPosition.x, child.position.y, child.position.z);
-                child.GetComponent<Drag>().enabled = true;
-                Debug.Log("child position after " + child.position);
-            }
+            child.transform.position = new Vector3(deckPosition.x, child.position.y, child.position.z);
+            child.GetComponent<Drag>().enabled = true;
         }
+        
         while (count < draw && !IsEmpty)
         {
             
@@ -81,16 +77,17 @@ public class DrawDeck : CardGroup
                 TopCard = CardList.Last();
             }
             DiscardPile.SpawnCard(count);
-            UpdateSprite();
-            //Debug.Log ("here " + draw);
             count++;
         }
         if (OptionsManager.DrawCount is not DrawType.Single)
         {
-
+            if (DiscardPile.TopCard is null)
+                return;
+            
             var topCardSpace = DiscardPile.GetGroupCardSpace(DiscardPile.TopCard);
             topCardSpace.GetComponent<Drag>().enabled = true;
         }
+        UpdateSprite();
     }
     
 

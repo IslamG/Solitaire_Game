@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -21,20 +19,12 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     public OnCardMovedToFoundation<CardSpace, CardGroup> movedToFoundation = new();
     public void Start()
     {
-        startPosition = transform.localPosition;// new Vector3(transform.localPosition.x, transform.position.y, transform.localPosition.z);
+        startPosition = transform.localPosition;
         thisImage = GetComponent<Image>();
         thisCard = GetComponent<CardSpace>();
 
         EventManager.AddCardInvoker(this);
     }
-    //void LateUpdate()
-    //{
-    //    if(startPosition == null || startPosition == new Vector3())
-    //    {
-    //        Debug.Log("local pos " + transform.localPosition + " pos pos " + transform.position);
-    //        startPosition = transform.localPosition;
-    //    }
-    //}
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!thisCard.CardData.IsFaceUp) return;
@@ -94,9 +84,7 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     public void ResetPosition()
     {
         Canvas.ForceUpdateCanvases();
-        Debug.Log("Local " + transform.localPosition);
         transform.localPosition = startPosition;
-        Debug.Log("start " + startPosition);
         if (!thisCard.CompareTag("DiscardCard"))
         {
             for (int i = 0; i < lowerSiblings.Count; i++)
@@ -177,11 +165,10 @@ public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     {
         Canvas.ForceUpdateCanvases();
         var layoutGroupComponent = gameObject.GetComponentInParent<LayoutGroup>();
-        Debug.Log("a layout "+ layoutGroupComponent);
         layoutGroupComponent.enabled = false;
         //yield return new WaitForEndOfFrame();
         layoutGroupComponent.enabled = true;
-        EditorApplication.QueuePlayerLoopUpdate();
+        //EditorApplication.QueuePlayerLoopUpdate();
         
     }
 }

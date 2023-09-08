@@ -23,9 +23,11 @@ public class Board : MonoBehaviour
     public readonly List<Tablue> Tablues = new();
     public readonly List<Foundation> Foundations = new();
     public static Board Instance { get; private set; }
+    public bool IsGameOver => isGameOver;
 
     private int maxedFoundations = 0;
     private bool isGameOver = false;
+
 
     private void Awake()
     {
@@ -69,7 +71,7 @@ public class Board : MonoBehaviour
         if (maxedFoundations == FOUNDATION_COUNT)
         {
             var suits = Foundations.Select(f=> f.Suit).ToList();
-            Debug.Log("Game won, Score " + ScoreManager.GetFinalScore());
+           // Debug.Log("Game won, Score " + ScoreManager.GetFinalScore());
             Timer.Stop();
             Win();
         }
@@ -139,6 +141,8 @@ public class Board : MonoBehaviour
     };
     public bool ValidateFoundation(CardSpace card, CardGroup dst)
     {
+        if (card is null) return false;
+
         var src = card.GetComponentInParent<CardGroup>();
         if (src == dst) return false;
         if (card.CardData != src.TopCard) return false;

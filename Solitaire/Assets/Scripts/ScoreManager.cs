@@ -21,7 +21,6 @@ public class ScoreManager : MonoBehaviour
     public static Timer Timer;
     public static bool HasScoring;
     public static int StartingScore;//-52 for vegas
-    //public static ScoringType Type; 
 
     public static ScoreManager Instance { get; private set; }
     private void Awake()
@@ -42,7 +41,7 @@ public class ScoreManager : MonoBehaviour
     private void Start()
     {
         InitializeScore();
-        ScoreTitle.text = currentScore.ToString();
+        ScoreTitle.text = FinalScore.ToString("N0");
         //Listen for waste -> tab
         //Listen for waste -> Found
         //Listen for Tab -> Found
@@ -64,19 +63,19 @@ public class ScoreManager : MonoBehaviour
         var isTablue = dst.GetComponentInParent<Tablue>() != null;
         if (!isFoundation && !isTablue) return;
         currentScore += isFoundation ? TAB_TO_FOUNDATION : DISCARD_TO_TAB;
-        ScoreTitle.text = currentScore.ToString();
+        ScoreTitle.text = FinalScore.ToString("N0");
     }
 
     private  void HandleDiscardReset()
     {
-        currentScore += OptionsManager.DrawCount is DrawType.Single ? RESET_DISCARD_SINGLE : RESET_DISCARD_THREE;
-        ScoreTitle.text = currentScore.ToString();
+        currentScore = Mathf.Max(0, currentScore + (OptionsManager.DrawCount is DrawType.Single ? RESET_DISCARD_SINGLE : RESET_DISCARD_THREE));
+        ScoreTitle.text = FinalScore.ToString("N0");
     }
 
     private void HandleCardExposed()
     {
         currentScore += EXPOSE_CARD_TAB;
-        ScoreTitle.text = currentScore.ToString();
+        ScoreTitle.text = FinalScore.ToString("N0");
     }
 
     private void HandleDiscardMove(CardSpace card, CardGroup dst)
@@ -85,7 +84,7 @@ public class ScoreManager : MonoBehaviour
         var isTablue = dst.GetComponentInParent<Tablue>() != null;
         if (!isFoundation && !isTablue) return;
         currentScore += isFoundation ? DISCARD_TO_FOUNDATION : 0;
-        ScoreTitle.text = currentScore.ToString();
+        ScoreTitle.text = FinalScore.ToString("N0");
     }
 
     public void InitializeScore()
@@ -94,17 +93,18 @@ public class ScoreManager : MonoBehaviour
         BonusScore = 0;
         HasScoring = true;// OptionsManager.HasStatusBar;
         StartingScore = OptionsManager.Scoring is ScoringType.Standard ? 0 : -52;
-        ScoreTitle.text = currentScore.ToString();
+        ScoreTitle.text = FinalScore.ToString("N0");
     }
+    public static void DeductFromScore(int amount) { currentScore = Mathf.Max(0, currentScore - amount); /*ScoreTitle.text = currentScore.ToString("N0"); */}
     public static void CalculateBonus()
     {
+        Timer = GameObject.Find("Timer").GetComponent<Timer>();
         if (Timer.TotalTime < 30) BonusScore= 0;
         BonusScore = 700000 / Timer.TotalTime;
     }
     public static float GetFinalScore()
     {
-        //CalculateBonus();
-        Debug.Log("getting score " + currentScore);
+        CalculateBonus();
         currentScore += BonusScore;
         return FinalScore;
     }
